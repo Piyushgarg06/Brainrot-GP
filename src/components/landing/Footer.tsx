@@ -32,7 +32,7 @@ export function Footer() {
           © {new Date().getFullYear()} BRAINROTGP. ALL RIGHTS INSHEDENTALLY RESERVED.
         </span>
         <span>
-          DESIGNED BY{' '}
+          BY{' '}
           <a
             href="https://github.com/piyushgarg-dev"
             target="_blank"
@@ -53,22 +53,6 @@ export function Footer() {
           >
             PIYUSH GARG
           </a>
-          {' · '}
-          SHIPPED BY{' '}
-          <span
-            style={{
-              color: 'var(--text)',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.color = 'var(--accent)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.color = 'var(--text)';
-            }}
-          >
-            ANTIGRAVITY
-          </span>
         </span>
       </div>
     </footer>
