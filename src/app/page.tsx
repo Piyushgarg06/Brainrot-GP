@@ -26,7 +26,7 @@ export default function LandingPage() {
   }
 
   return (
-    <main style={{ backgroundColor: 'var(--bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <main style={{ backgroundColor: 'var(--bg)', minHeight: '100vh' }}>
       {/* Landing page Hero with pinned scroll trigger */}
       <Hero />
 
