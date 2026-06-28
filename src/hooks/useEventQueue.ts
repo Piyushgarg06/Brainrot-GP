@@ -132,7 +132,7 @@ export function useEventQueue(
           id:         generateId(),
           type:       'POSITION' as EventType,
           driverCode: code,
-          priority:   PRIORITY.POSITION,
+          priority:   isFavorite ? PRIORITY.LEADER : PRIORITY.POSITION,
           label:      `${resolveLastName(code)} +${gain}`,
           timestamp:  now,
         });
@@ -164,11 +164,12 @@ export function useEventQueue(
     cooldownRef.current.fastest = now;
 
     setQueue(prev => {
+      const isFavorite = favoriteDriverCode !== null && driverCode === favoriteDriverCode;
       const event: F1Event = {
         id:         generateId(),
         type:       'FASTEST' as EventType,
         driverCode,
-        priority:   PRIORITY.FASTEST,
+        priority:   isFavorite ? PRIORITY.LEADER : PRIORITY.FASTEST,
         label:      `Fastest Lap — ${resolveLastName(driverCode)} ${time}`,
         timestamp:  now,
       };
