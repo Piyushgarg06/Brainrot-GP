@@ -29,7 +29,7 @@ export function Footer() {
         }}
       >
         <span>
-          © {new Date().getFullYear()} BRAINROTGP. ALL RIGHTS INCHIDENTALLY RESERVED.
+          © {new Date().getFullYear()} BRAINROTGP. ALL RIGHTS INSHEDENTALLY RESERVED.
         </span>
         <span>
           DESIGNED BY{' '}
