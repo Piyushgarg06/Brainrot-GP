@@ -1,0 +1,65 @@
+/* ─────────────────────────────────────────────────────────────────
+   BrainrotGP Design Tokens
+   All color, typography, and surface values live here.
+   Never hardcode hex values in components — use these variables.
+───────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ── Surfaces ─────────────────────────────────────── */
+  --bg:         #080808;
+  --surface:    #0D0D0D;
+  --surface-2:  #141414;
+  --border:     #1F1F1F;
+
+  /* ── Text ─────────────────────────────────────────── */
+  --text:       #F0F0F0;
+  --muted:      #4A4A4A;
+
+  /* ── Accent (max 4 uses total across codebase) ───── */
+  --accent:     #E8002D;
+  --accent-dim: #8B0018;
+
+  /* ── Team/Event colors (not accent — no limit) ───── */
+  --purple-fl:  #9B59B6;   /* fastest lap */
+  --green-pos:  #27AE60;   /* position gain */
+  --gold-win:   #F1C40F;   /* race winner  */
+
+  /* ── Typography ───────────────────────────────────── */
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* ── Carbon fiber texture (SVG inline) ────────────
+     Two diagonal weaves at 45° and 135°.
+     Cell size 4px. Stroke #1A1A1A on #0D0D0D.
+     Opacity controlled at usage site (max 0.6).
+  ───────────────────────────────────────────────── */
+  --carbon-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%230D0D0D'/%3E%3Cpath d='M0 4L4 0' stroke='%231A1A1A' stroke-width='0.5'/%3E%3Cpath d='M0 0L4 4' stroke='%231A1A1A' stroke-width='0.5'/%3E%3C/svg%3E");
+}
+
+/* ── Carbon fiber utility class ──────────────────────────────── */
+.carbon-bg {
+  background-color: var(--bg);
+  background-image: var(--carbon-svg);
+  background-repeat: repeat;
+}
+
+/* ── CSS pulse keyframe for connection dot ───────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+/* ── Flash keyframe for event-active row ─────────────────────── */
+@keyframes row-flash {
+  0%   { background-color: var(--surface-2); }
+  100% { background-color: transparent; }
+}
+
+/* ── Countup number animation ────────────────────────────────── */
+@keyframes count-up {
+  from { opacity: 0.4; transform: translateY(4px); }
+  to   { opacity: 1;   transform: translateY(0);   }
+}
