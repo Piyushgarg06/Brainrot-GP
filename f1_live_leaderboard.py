@@ -151,14 +151,14 @@ def process_signalr_message(msg):
                     if isinstance(val, dict):
                         num = val.get("RacingNumber", None)
                         if num:
-                            current_positions[num] = int(pos_str)
+                            # pos_str is the dict key ("0", "1", "2" representing the 0-indexed position)
+                            current_positions[num] = int(pos_str) + 1
             elif isinstance(lines, list):
                 for idx, line in enumerate(lines):
                     if isinstance(line, dict):
                         num = line.get("RacingNumber", None)
-                        pos = line.get("Position", None)
-                        if num and pos:
-                            current_positions[num] = int(pos)
+                        if num:
+                            current_positions[num] = idx + 1
                     elif isinstance(line, (str, int)):
                         current_positions[str(line)] = idx + 1
 

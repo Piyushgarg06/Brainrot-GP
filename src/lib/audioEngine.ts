@@ -18,15 +18,27 @@ export class AudioEngine {
   private currentPriority: number = 0;
   private initialized:     boolean = false;
 
+  constructor() {
+    if (typeof window !== 'undefined') {
+      try {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        this.ctx = new AudioContextClass();
+        this.gainNode = this.ctx.createGain();
+        this.gainNode.gain.value = this.muted ? 0 : this.volume;
+        this.gainNode.connect(this.ctx.destination);
+      } catch (e) {
+        console.warn("[AudioEngine] Failed to create AudioContext in constructor:", e);
+      }
+    }
+  }
+
   // ── init ────────────────────────────────────────────────────
   // Must be called after a user gesture (click/keydown).
   // Idempotent — safe to call multiple times.
   async init(): Promise<void> {
-    if (this.initialized) return;
-    this.ctx = new AudioContext();
-    this.gainNode = this.ctx.createGain();
-    this.gainNode.gain.value = this.muted ? 0 : this.volume;
-    this.gainNode.connect(this.ctx.destination);
+    if (this.ctx && this.ctx.state === 'suspended') {
+      await this.ctx.resume();
+    }
     this.initialized = true;
   }
 

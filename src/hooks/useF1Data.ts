@@ -15,8 +15,8 @@ const POLL_INACTIVE = 10000;
 
 function isSessionLive(dateStart: string, dateEnd: string | null): boolean {
   const now   = Date.now();
-  const start = new Date(dateStart).getTime();
-  const end   = dateEnd ? new Date(dateEnd).getTime() : null;
+  const start = new Date(dateStart.endsWith('Z') ? dateStart : dateStart + 'Z').getTime();
+  const end   = dateEnd ? new Date(dateEnd.endsWith('Z') ? dateEnd : dateEnd + 'Z').getTime() : null;
   if (now < start) return false;
   if (end !== null && now > end + 60_000) return false;
   return true;

@@ -67,7 +67,7 @@ export function useEventQueue(
       !winnerFiredRef.current &&
       session !== null &&
       session.dateEnd !== null &&
-      new Date(session.dateEnd).getTime() < now
+      new Date(session.dateEnd.endsWith('Z') ? session.dateEnd : session.dateEnd + 'Z').getTime() < now
     ) {
       winnerFiredRef.current = true;
       const winner = positions[0];

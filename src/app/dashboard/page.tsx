@@ -98,7 +98,7 @@ export default function DashboardPage() {
 
   // ── Preload all driver audio once ────────────────────────────
   useEffect(() => {
-    if (!audioReady || preloadedRef.current) return;
+    if (preloadedRef.current) return;
     preloadedRef.current = true;
     for (const driver of Object.values(DRIVERS)) {
       audio.preload(driver.audioFile, `/audio/${driver.audioFile}.mp3`);
@@ -106,7 +106,7 @@ export default function DashboardPage() {
         audio.preload(`${driver.audioFile}_win`, `/audio/${driver.audioFile}_win.mp3`);
       }
     }
-  }, [audioReady, audio]);
+  }, [audio]);
 
   // ── Mobile banner ─────────────────────────────────────────────
   const [showMobileBanner, setShowMobileBanner] = useState(false);
