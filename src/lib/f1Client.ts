@@ -104,7 +104,18 @@ function mapDriver(raw: RawF1Driver): F1Driver {
 // ── Fetch helpers ────────────────────────────────────────────────
 
 async function fetchJSON(url: string): Promise<unknown> {
-  const res = await fetch(url, { cache: 'no-store' });
+  const headers: Record<string, string> = {
+    'Accept': 'application/json',
+  };
+
+  if (typeof window !== 'undefined') {
+    const key = localStorage.getItem('brainrotgp-openf1-key');
+    if (key) {
+      headers['Authorization'] = `Bearer ${key.trim()}`;
+    }
+  }
+
+  const res = await fetch(url, { headers, cache: 'no-store' });
   if (!res.ok) {
     throw new Error(`OpenF1 fetch failed: ${res.status} ${res.statusText} — ${url}`);
   }

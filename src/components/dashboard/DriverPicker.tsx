@@ -26,6 +26,26 @@ export function DriverPicker({ value, onChange }: DriverPickerProps) {
   const reduced              = usePrefersReducedMotion();
   const selectedDriver       = value ? DRIVERS[value] : null;
 
+  const [apiKey, setApiKey]  = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiKey(localStorage.getItem('brainrotgp-openf1-key') || '');
+    }
+  }, []);
+
+  const updateApiKey = (val: string) => {
+    setApiKey(val);
+    if (typeof window !== 'undefined') {
+      if (val.trim()) {
+        localStorage.setItem('brainrotgp-openf1-key', val.trim());
+      } else {
+        localStorage.removeItem('brainrotgp-openf1-key');
+      }
+      window.dispatchEvent(new Event('brainrotgp-key-updated'));
+    }
+  };
+
   // Close on outside click
   useEffect(() => {
     if (!open) return;
@@ -117,6 +137,64 @@ export function DriverPicker({ value, onChange }: DriverPickerProps) {
             role="listbox"
             aria-label="Select your driver"
           >
+            {/* API Key configuration */}
+            <div
+              style={{
+                padding:       '12px 14px',
+                borderBottom:  '1px solid var(--border)',
+                backgroundColor: 'var(--surface-2)',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily:    'var(--font-mono)',
+                  fontSize:      '9px',
+                  color:         'var(--muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom:  '6px',
+                  display:       'flex',
+                  justifyContent: 'space-between',
+                  alignItems:    'center',
+                }}
+              >
+                <span>OpenF1 API Key (Live Race)</span>
+                {apiKey && (
+                  <button
+                    onClick={() => updateApiKey('')}
+                    style={{
+                      background: 'none',
+                      border:     'none',
+                      color:      'var(--accent)',
+                      fontSize:   '8px',
+                      cursor:     'pointer',
+                      padding:    0,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <input
+                type="password"
+                placeholder="Paste Stripe Token..."
+                value={apiKey}
+                onChange={e => updateApiKey(e.target.value)}
+                style={{
+                  width:           '100%',
+                  backgroundColor: 'var(--surface)',
+                  border:          '1px solid var(--border)',
+                  borderRadius:    '2px',
+                  color:           'var(--text)',
+                  fontFamily:      'var(--font-mono)',
+                  fontSize:        '10px',
+                  padding:         '6px 8px',
+                  outline:         'none',
+                }}
+              />
+            </div>
+
             {/* Clear selection */}
             {value && (
               <button

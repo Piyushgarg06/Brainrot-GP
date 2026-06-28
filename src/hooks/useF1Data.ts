@@ -198,12 +198,26 @@ export function useF1Data() {
     return () => document.removeEventListener('visibilitychange', onVisibilityChange);
   }, [poll, clearTimer]);
 
-  // Initial poll on mount
+  // Initial poll on mount and API key listeners
   useEffect(() => {
     poll();
-    return clearTimer;
+
+    const handleKeyChange = () => {
+      backoffIndexRef.current = 0;
+      clearTimer();
+      poll();
+    };
+
+    window.addEventListener('brainrotgp-key-updated', handleKeyChange);
+    window.addEventListener('storage', handleKeyChange);
+
+    return () => {
+      clearTimer();
+      window.removeEventListener('brainrotgp-key-updated', handleKeyChange);
+      window.removeEventListener('storage', handleKeyChange);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [poll]);
 
   return state;
 }

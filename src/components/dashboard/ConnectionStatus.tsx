@@ -1,6 +1,6 @@
 'use client';
 
-type ConnectionState = 'connected' | 'reconnecting' | 'error';
+type ConnectionState = 'connected' | 'reconnecting' | 'error' | 'restricted';
 
 interface ConnectionStatusProps {
   state:       ConnectionState;
@@ -12,15 +12,17 @@ export function ConnectionStatus({ state, lastUpdated }: ConnectionStatusProps) 
     connected:    'LIVE',
     reconnecting: 'RECONNECTING...',
     error:        'CONNECTION LOST',
+    restricted:   'API KEY REQUIRED (LIVE)',
   }[state];
 
   const dotColor = {
     connected:    'var(--green-pos)',
     reconnecting: 'var(--muted)',
     error:        '#E8002D',
+    restricted:   '#E67E22', // Amber yellow flag color
   }[state];
 
-  const isPulsing = state === 'connected';
+  const isPulsing = state === 'connected' || state === 'restricted';
 
   // "X seconds ago" for last update
   const ageSecs = lastUpdated > 0 ? Math.floor((Date.now() - lastUpdated) / 1000) : null;
