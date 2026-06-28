@@ -67,6 +67,29 @@ export function useF1Data() {
     isFetchingRef.current = true;
 
     try {
+      // ── Try Local FastF1 Proxy first (bypasses OpenF1 401 limits) ──
+      try {
+        const localRes = await fetch('http://localhost:8080/live', {
+          signal: AbortSignal.timeout(1000)
+        });
+        if (localRes.ok) {
+          const localData = await localRes.json();
+          if (localData && (localData.positions.length > 0 || localData.session)) {
+            setState({
+              ...localData,
+              lastUpdated: Date.now(),
+              error: null
+            });
+            backoffIndexRef.current = 0;
+            isFetchingRef.current = false;
+            scheduleNext(localData.isLive ? POLL_ACTIVE : POLL_INACTIVE, poll);
+            return;
+          }
+        }
+      } catch (localErr) {
+        // Local proxy offline, proceed to fallback OpenF1 API below
+      }
+
       // ── 1. Get / refresh session ─────────────────────────────
       const session = await getLatestSession();
       const isLive  = session
