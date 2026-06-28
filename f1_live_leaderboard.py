@@ -5,6 +5,7 @@ import threading
 import requests
 from datetime import datetime, timezone
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from socketserver import ThreadingMixIn
 from fastf1.livetiming.client import SignalRClient
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 from signalrcore.messages.completion_message import CompletionMessage
@@ -224,6 +225,37 @@ class CustomSignalRClient(SignalRClient):
         elif isinstance(msg, list) and len(msg) >= 2:
             process_signalr_message(msg)
 
+    def _supervise(self):
+        # Monitor the connection state and auto-reconnect if it falls offline
+        self._t_last_message = time.time()
+        was_connected = False
+        while True:
+            if self._is_connected:
+                was_connected = True
+            elif was_connected:
+                logger.warning("WebSocket connection lost! Attempting to reconnect...")
+                was_connected = False
+                try:
+                    self._connection.stop()
+                except Exception as e:
+                    logger.error(f"Error stopping connection: {e}")
+                
+                # Reconnection retry loop
+                reconnect_delay = 2
+                while not self._is_connected:
+                    try:
+                        logger.info("Retrying WebSocket connection...")
+                        self._run()
+                        logger.info("Reconnection successful!")
+                    except Exception as e:
+                        logger.error(f"Reconnection attempt failed: {e}")
+                        time.sleep(reconnect_delay)
+                        reconnect_delay = min(reconnect_delay * 2, 30) # exponential backoff
+            time.sleep(1)
+
+class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
+    pass
+
 # HTTP API Server
 class CORSRequestHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -253,7 +285,7 @@ class CORSRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 def run_http_server():
-    server = HTTPServer(('localhost', 8080), CORSRequestHandler)
+    server = ThreadingHTTPServer(('localhost', 8080), CORSRequestHandler)
     logger.info("Local HTTP proxy server running on http://localhost:8080/live")
     server.serve_forever()
 
