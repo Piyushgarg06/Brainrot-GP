@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import logging
@@ -285,8 +286,9 @@ class CORSRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 def run_http_server():
-    server = ThreadingHTTPServer(('localhost', 8080), CORSRequestHandler)
-    logger.info("Local HTTP proxy server running on http://localhost:8080/live")
+    port = int(os.environ.get('PORT', 8080))
+    server = ThreadingHTTPServer(('0.0.0.0', port), CORSRequestHandler)
+    logger.info(f"HTTP proxy server running on http://0.0.0.0:{port}/live")
     server.serve_forever()
 
 def main():

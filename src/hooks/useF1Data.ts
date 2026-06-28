@@ -69,7 +69,8 @@ export function useF1Data() {
     try {
       // ── Try Local FastF1 Proxy first (bypasses OpenF1 401 limits) ──
       try {
-        const localRes = await fetch('http://localhost:8080/live', {
+        const fastf1Url = process.env.NEXT_PUBLIC_FASTF1_URL ?? 'http://localhost:8080';
+        const localRes = await fetch(`${fastf1Url}/live`, {
           signal: AbortSignal.timeout(1000)
         });
         if (localRes.ok) {
