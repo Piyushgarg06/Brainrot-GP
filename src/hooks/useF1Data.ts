@@ -35,6 +35,7 @@ const initialState: F1DataState = {
   driverNumberMap: {},   // built from OpenF1 /drivers — driverNumber → nameAcronym
   fastestLap:      null,
   isLive:          false,
+  raceFinished:    false,
   lastUpdated:     0,
   error:           null,
 };
@@ -76,14 +77,24 @@ export function useF1Data() {
         if (localRes.ok) {
           const localData = await localRes.json();
           if (localData && (localData.positions.length > 0 || localData.session)) {
+            // Client-side dateEnd fallback: if proxy doesn't know it's finished yet
+            const raceFinished: boolean = localData.raceFinished === true ||
+              (localData.session?.dateEnd
+                ? new Date(localData.session.dateEnd.endsWith('Z')
+                    ? localData.session.dateEnd
+                    : localData.session.dateEnd + 'Z').getTime() < Date.now() - 60_000
+                : false);
             setState({
               ...localData,
+              raceFinished,
+              isLive: localData.isLive && !raceFinished,
               lastUpdated: Date.now(),
               error: null
             });
             backoffIndexRef.current = 0;
             isFetchingRef.current = false;
-            scheduleNext(localData.isLive ? POLL_ACTIVE : POLL_INACTIVE, poll);
+            // Poll slower once race is done
+            scheduleNext(raceFinished ? POLL_INACTIVE : (localData.isLive ? POLL_ACTIVE : POLL_INACTIVE), poll);
             return;
           }
         }
@@ -168,6 +179,12 @@ export function useF1Data() {
       // Reset backoff on success
       backoffIndexRef.current = 0;
 
+      // Client-side raceFinished determination for OpenF1 fallback path
+      const raceFinished: boolean =
+        session !== null &&
+        session.dateEnd !== null &&
+        new Date(session.dateEnd.endsWith('Z') ? session.dateEnd : session.dateEnd + 'Z').getTime() < Date.now() - 60_000;
+
       setState(prev => {
         // Merge positions — keep latest entry per driver
         const positionMap = new Map<number, F1Position>();
@@ -190,13 +207,14 @@ export function useF1Data() {
           drivers:         mergedDrivers,
           driverNumberMap: mergedNumberMap,
           fastestLap:      fastestLapUpdate ?? prev.fastestLap,
-          isLive,
+          isLive:          isLive && !raceFinished,
+          raceFinished,
           lastUpdated:     Date.now(),
           error:           null,
         };
       });
 
-      scheduleNext(isLive ? POLL_ACTIVE : POLL_INACTIVE, poll);
+      scheduleNext(raceFinished ? POLL_INACTIVE : (isLive ? POLL_ACTIVE : POLL_INACTIVE), poll);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       setState(prev => ({ ...prev, error: message }));

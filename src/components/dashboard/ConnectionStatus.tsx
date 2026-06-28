@@ -1,6 +1,6 @@
 'use client';
 
-type ConnectionState = 'connected' | 'reconnecting' | 'error' | 'restricted';
+type ConnectionState = 'connected' | 'reconnecting' | 'error' | 'restricted' | 'finished';
 
 interface ConnectionStatusProps {
   state:       ConnectionState;
@@ -13,6 +13,7 @@ export function ConnectionStatus({ state, lastUpdated }: ConnectionStatusProps) 
     reconnecting: 'RECONNECTING...',
     error:        'CONNECTION LOST',
     restricted:   'API KEY REQUIRED (LIVE)',
+    finished:     'RACE FINISHED',
   }[state];
 
   const dotColor = {
@@ -20,6 +21,7 @@ export function ConnectionStatus({ state, lastUpdated }: ConnectionStatusProps) 
     reconnecting: 'var(--muted)',
     error:        '#E8002D',
     restricted:   '#E67E22', // Amber yellow flag color
+    finished:     'var(--muted)',
   }[state];
 
   const isPulsing = state === 'connected' || state === 'restricted';

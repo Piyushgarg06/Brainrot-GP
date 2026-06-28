@@ -15,7 +15,7 @@ import { DRIVERS }               from '@/lib/drivers';
 import { PRIORITY }              from '@/lib/eventPriority';
 import type { F1Event }          from '@/types/events';
 
-type ConnectionState = 'connected' | 'reconnecting' | 'error' | 'restricted';
+type ConnectionState = 'connected' | 'reconnecting' | 'error' | 'restricted' | 'finished';
 
 // ── Dashboard page ─────────────────────────────────────────────
 export default function DashboardPage() {
@@ -31,9 +31,10 @@ export default function DashboardPage() {
   const preloadedRef                = useRef(false);
 
   const connectionState: ConnectionState =
-    f1State.error         ? (f1State.error.includes('401') ? 'restricted' : 'error')
-    : f1State.isLive      ? 'connected'
-    : f1State.lastUpdated ? 'reconnecting'
+    f1State.raceFinished    ? 'finished'
+    : f1State.error         ? (f1State.error.includes('401') ? 'restricted' : 'error')
+    : f1State.isLive        ? 'connected'
+    : f1State.lastUpdated   ? 'reconnecting'
     : 'reconnecting';
 
   // Refs to break circular dependency: useEventQueue <-> useBroadcastChannel

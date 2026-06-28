@@ -16,7 +16,7 @@ function formatSessionLabel(sessionType: string): string {
 }
 
 export function SessionBar({ f1State }: SessionBarProps) {
-  const { session, positions, drivers, driverNumberMap, fastestLap, isLive } = f1State;
+  const { session, positions, drivers, driverNumberMap, fastestLap, isLive, raceFinished } = f1State;
 
   const leader = positions[0];
   const leaderCode = leader
@@ -118,11 +118,13 @@ export function SessionBar({ f1State }: SessionBarProps) {
           textAlign:     'center',
         }}
         aria-live="polite"
-        aria-label={leaderCode ? `P1 leader: ${leaderCode}` : 'No data'}
+        aria-label={raceFinished ? 'Race finished' : (leaderCode ? `P1 leader: ${leaderCode}` : 'No data')}
       >
-        {leaderCode
-          ? `P1 · ${leaderCode} · ${leaderGap}`
-          : isLive ? 'WAITING FOR DATA' : 'NO SESSION'}
+        {raceFinished
+          ? <span style={{ fontSize: '16px', letterSpacing: '0.1em' }}>🏁 RACE FINISHED</span>
+          : leaderCode
+            ? `P1 · ${leaderCode} · ${leaderGap}`
+            : isLive ? 'WAITING FOR DATA' : 'NO SESSION'}
       </div>
 
       {/* Right — fastest lap */}

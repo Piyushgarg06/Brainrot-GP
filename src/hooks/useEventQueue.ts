@@ -56,19 +56,20 @@ export function useEventQueue(
   // ── Main event detection — runs when positions or session changes ──
   useEffect(() => {
     const now = Date.now();
-    const { positions, session, driverNumberMap } = f1State;
+    const { positions, session, driverNumberMap, raceFinished } = f1State;
 
     if (positions.length === 0) return;
 
     const newEvents: F1Event[] = [];
 
     // ── Winner detection ─────────────────────────────────────────
-    if (
-      !winnerFiredRef.current &&
+    // Fires when: server signals raceFinished=true, OR session.dateEnd has passed
+    const dateEndPassed =
       session !== null &&
       session.dateEnd !== null &&
-      new Date(session.dateEnd.endsWith('Z') ? session.dateEnd : session.dateEnd + 'Z').getTime() < now
-    ) {
+      new Date(session.dateEnd.endsWith('Z') ? session.dateEnd : session.dateEnd + 'Z').getTime() < now;
+
+    if (!winnerFiredRef.current && session !== null && (raceFinished || dateEndPassed)) {
       winnerFiredRef.current = true;
       const winner = positions[0];
       if (winner) {
@@ -150,7 +151,7 @@ export function useEventQueue(
       return merged.slice(0, MAX_QUEUE_DEPTH);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [f1State.positions, f1State.session]);
+  }, [f1State.positions, f1State.session, f1State.raceFinished]);
 
   // ── Fastest lap detection ──────────────────────────────────────
   useEffect(() => {

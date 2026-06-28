@@ -76,6 +76,7 @@ export interface F1DataState {
   driverNumberMap:  Record<number, string>;      // driverNumber → nameAcronym (e.g. 1 → "VER")
   fastestLap:       { driverCode: string; time: string } | null;
   isLive:           boolean;
+  raceFinished:     boolean;   // true once F1 feed sends SessionStatus=Finished or dateEnd passed
   lastUpdated:      number;
   error:            string | null;
 }

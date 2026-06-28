@@ -23,6 +23,7 @@ live_state = {
     "driverNumberMap": {},
     "fastestLap": None,
     "isLive": False,
+    "raceFinished": False,   # True once SessionStatus=Finished received or dateEnd passed
     "lastUpdated": 0,
     "error": None
 }
@@ -67,6 +68,18 @@ def parse_lap_time(lap_str):
     except:
         return None
 
+def _is_date_end_passed(s_info: dict) -> bool:
+    """Return True if session dateEnd exists and is more than 60s in the past."""
+    date_end = s_info.get("dateEnd")
+    if not date_end:
+        return False
+    try:
+        end_str = date_end if date_end.endswith('Z') else date_end + 'Z'
+        end_ts = datetime.fromisoformat(end_str.replace('Z', '+00:00')).timestamp()
+        return time.time() > end_ts + 60
+    except Exception:
+        return False
+
 def process_signalr_message(msg):
     global best_lap_seconds
     if not isinstance(msg, list) or len(msg) < 2:
@@ -83,6 +96,14 @@ def process_signalr_message(msg):
             return
 
     with state_lock:
+        if topic == "SessionStatus":
+            status = payload.get("Status", "") if isinstance(payload, dict) else str(payload)
+            if status in ("Finished", "Ends", "Finalised"):
+                live_state["raceFinished"] = True
+                live_state["isLive"] = False
+                logger.info(f"Race finished — SessionStatus: {status}")
+            return  # no further state update needed
+
         if topic == "SessionInfo":
             meeting = payload.get("Meeting", {})
             session_info["sessionKey"] = payload.get("Key", 9999)
@@ -186,8 +207,13 @@ def process_signalr_message(msg):
             })
         pos_array.sort(key=lambda x: x["position"])
         live_state["positions"] = pos_array
-        
-        live_state["isLive"] = len(pos_array) > 0
+
+        # Mark finished if dateEnd has passed (time-based fallback)
+        if not live_state["raceFinished"] and _is_date_end_passed(session_info):
+            live_state["raceFinished"] = True
+            logger.info("Race finished — dateEnd passed")
+
+        live_state["isLive"] = len(pos_array) > 0 and not live_state["raceFinished"]
         live_state["lastUpdated"] = int(time.time() * 1000)
         live_state["error"] = None
 
