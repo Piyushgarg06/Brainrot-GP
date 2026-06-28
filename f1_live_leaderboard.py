@@ -3,10 +3,11 @@ import json
 import logging
 import threading
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from fastf1.livetiming.client import SignalRClient
 from signalrcore.hub_connection_builder import HubConnectionBuilder
+from signalrcore.messages.completion_message import CompletionMessage
 
 # Configure logger
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -28,7 +29,30 @@ state_lock = threading.Lock()
 
 # Temporary local cache
 current_positions = {}  # driver_number -> position
-current_drivers = {}    # driver_number -> driver_dict
+current_drivers = {
+    "1": {"driverNumber": 1, "broadcastName": "L NORRIS", "nameAcronym": "NOR", "teamName": "McLaren", "teamColour": "F47600"},
+    "3": {"driverNumber": 3, "broadcastName": "M VERSTAPPEN", "nameAcronym": "VER", "teamName": "Red Bull Racing", "teamColour": "4781D7"},
+    "5": {"driverNumber": 5, "broadcastName": "G BORTOLETO", "nameAcronym": "BOR", "teamName": "Audi", "teamColour": "F50537"},
+    "6": {"driverNumber": 6, "broadcastName": "I HADJAR", "nameAcronym": "HAD", "teamName": "Red Bull Racing", "teamColour": "4781D7"},
+    "10": {"driverNumber": 10, "broadcastName": "P GASLY", "nameAcronym": "GAS", "teamName": "Alpine", "teamColour": "00A1E8"},
+    "11": {"driverNumber": 11, "broadcastName": "S PEREZ", "nameAcronym": "PER", "teamName": "Cadillac", "teamColour": "909090"},
+    "12": {"driverNumber": 12, "broadcastName": "K ANTONELLI", "nameAcronym": "ANT", "teamName": "Mercedes", "teamColour": "00D7B6"},
+    "14": {"driverNumber": 14, "broadcastName": "F ALONSO", "nameAcronym": "ALO", "teamName": "Aston Martin", "teamColour": "229971"},
+    "16": {"driverNumber": 16, "broadcastName": "C LECLERC", "nameAcronym": "LEC", "teamName": "Ferrari", "teamColour": "ED1131"},
+    "18": {"driverNumber": 18, "broadcastName": "L STROLL", "nameAcronym": "STR", "teamName": "Aston Martin", "teamColour": "229971"},
+    "23": {"driverNumber": 23, "broadcastName": "A ALBON", "nameAcronym": "ALB", "teamName": "Williams", "teamColour": "1868DB"},
+    "27": {"driverNumber": 27, "broadcastName": "N HULKENBERG", "nameAcronym": "HUL", "teamName": "Audi", "teamColour": "F50537"},
+    "30": {"driverNumber": 30, "broadcastName": "L LAWSON", "nameAcronym": "LAW", "teamName": "Racing Bulls", "teamColour": "6C98FF"},
+    "31": {"driverNumber": 31, "broadcastName": "E OCON", "nameAcronym": "OCO", "teamName": "Haas F1 Team", "teamColour": "9C9FA2"},
+    "41": {"driverNumber": 41, "broadcastName": "A LINDBLAD", "nameAcronym": "LIN", "teamName": "Racing Bulls", "teamColour": "6C98FF"},
+    "43": {"driverNumber": 43, "broadcastName": "F COLAPINTO", "nameAcronym": "COL", "teamName": "Alpine", "teamColour": "00A1E8"},
+    "44": {"driverNumber": 44, "broadcastName": "L HAMILTON", "nameAcronym": "HAM", "teamName": "Ferrari", "teamColour": "ED1131"},
+    "55": {"driverNumber": 55, "broadcastName": "C SAINZ", "nameAcronym": "SAI", "teamName": "Williams", "teamColour": "1868DB"},
+    "63": {"driverNumber": 63, "broadcastName": "G RUSSELL", "nameAcronym": "RUS", "teamName": "Mercedes", "teamColour": "00D7B6"},
+    "77": {"driverNumber": 77, "broadcastName": "V BOTTAS", "nameAcronym": "BOT", "teamName": "Cadillac", "teamColour": "909090"},
+    "81": {"driverNumber": 81, "broadcastName": "O PIASTRI", "nameAcronym": "PIA", "teamName": "McLaren", "teamColour": "F47600"},
+    "87": {"driverNumber": 87, "broadcastName": "O BEARMAN", "nameAcronym": "BEA", "teamName": "Haas F1 Team", "teamColour": "9C9FA2"}
+}
 session_info = {}       # session info fields
 best_lap_seconds = None # float representation of best lap
 
@@ -47,11 +71,14 @@ def process_signalr_message(msg):
         return
 
     topic = msg[0]
-    try:
-        payload = json.loads(msg[1])
-    except Exception as e:
-        logger.error(f"Failed to parse payload for topic {topic}: {e}")
-        return
+    payload = msg[1]
+    
+    if isinstance(payload, str):
+        try:
+            payload = json.loads(payload)
+        except Exception as e:
+            logger.error(f"Failed to parse payload for topic {topic}: {e}")
+            return
 
     with state_lock:
         if topic == "SessionInfo":
@@ -59,7 +86,7 @@ def process_signalr_message(msg):
             session_info["sessionKey"] = payload.get("Key", 9999)
             session_info["sessionName"] = payload.get("Name", "Live Session")
             session_info["sessionType"] = payload.get("Type", "Race")
-            session_info["dateStart"] = payload.get("StartDate", datetime.utcnow().isoformat() + "Z")
+            session_info["dateStart"] = payload.get("StartDate", datetime.now(timezone.utc).isoformat() + "Z")
             session_info["dateEnd"] = payload.get("EndDate", None)
             session_info["circuitName"] = meeting.get("Circuit", {}).get("ShortName", "Unknown Circuit")
             
@@ -67,15 +94,32 @@ def process_signalr_message(msg):
             for num, d in payload.items():
                 if num == "_kf":
                     continue
+                
+                # If d is not a dictionary (unexpected), skip it
+                if not isinstance(d, dict):
+                    continue
+                    
                 driver_num = int(num)
-                acronym = d.get("Tla", f"DRV{num}")
-                current_drivers[num] = {
+                existing = current_drivers.get(num, {
                     "driverNumber": driver_num,
-                    "broadcastName": d.get("BroadcastName", d.get("FullName", acronym)),
-                    "nameAcronym": acronym,
-                    "teamName": d.get("TeamName", "Unknown Team"),
-                    "teamColour": d.get("TeamColour", "FFFFFF")
-                }
+                    "broadcastName": f"DRV{num}",
+                    "nameAcronym": f"DRV{num}",
+                    "teamName": "Unknown Team",
+                    "teamColour": "FFFFFF"
+                })
+                
+                if "Tla" in d:
+                    existing["nameAcronym"] = d["Tla"]
+                if "BroadcastName" in d:
+                    existing["broadcastName"] = d["BroadcastName"]
+                elif "FullName" in d:
+                    existing["broadcastName"] = d["FullName"]
+                if "TeamName" in d:
+                    existing["teamName"] = d["TeamName"]
+                if "TeamColour" in d:
+                    existing["teamColour"] = d["TeamColour"]
+                    
+                current_drivers[num] = existing
                 
         elif topic == "TimingData":
             lines = payload.get("Lines", {})
@@ -98,13 +142,31 @@ def process_signalr_message(msg):
                             "driverCode": acronym,
                             "time": last_lap_val
                         }
+                        
+        elif topic == "TopThree":
+            lines = payload.get("Lines", [])
+            if isinstance(lines, dict):
+                for pos_str, val in lines.items():
+                    if isinstance(val, dict):
+                        num = val.get("RacingNumber", None)
+                        if num:
+                            current_positions[num] = int(pos_str)
+            elif isinstance(lines, list):
+                for idx, line in enumerate(lines):
+                    if isinstance(line, dict):
+                        num = line.get("RacingNumber", None)
+                        pos = line.get("Position", None)
+                        if num and pos:
+                            current_positions[num] = int(pos)
+                    elif isinstance(line, (str, int)):
+                        current_positions[str(line)] = idx + 1
 
         # Build final state object
         live_state["session"] = {
             "sessionKey": session_info.get("sessionKey", 9999),
             "sessionName": session_info.get("sessionName", "Live Race"),
             "sessionType": session_info.get("sessionType", "Race"),
-            "dateStart": session_info.get("dateStart", datetime.utcnow().isoformat() + "Z"),
+            "dateStart": session_info.get("dateStart", datetime.now(timezone.utc).isoformat() + "Z"),
             "dateEnd": session_info.get("dateEnd", None),
             "circuitName": session_info.get("circuitName", "Unknown Circuit")
         } if session_info else None
@@ -118,7 +180,7 @@ def process_signalr_message(msg):
             pos_array.append({
                 "driverNumber": int(num),
                 "position": pos_val,
-                "date": datetime.utcnow().isoformat() + "Z"
+                "date": datetime.now(timezone.utc).isoformat() + "Z"
             })
         pos_array.sort(key=lambda x: x["position"])
         live_state["positions"] = pos_array
@@ -153,9 +215,13 @@ class CustomSignalRClient(SignalRClient):
             
         self._connection.send("Subscribe", [self.topics], on_invocation=self._on_message)
 
-    def _on_message(self, msg: list):
+    def _on_message(self, msg):
         self._t_last_message = time.time()
-        if isinstance(msg, list) and len(msg) >= 2:
+        if isinstance(msg, CompletionMessage):
+            if msg.result and isinstance(msg.result, dict):
+                for topic, payload in msg.result.items():
+                    process_signalr_message([topic, payload])
+        elif isinstance(msg, list) and len(msg) >= 2:
             process_signalr_message(msg)
 
 # HTTP API Server
