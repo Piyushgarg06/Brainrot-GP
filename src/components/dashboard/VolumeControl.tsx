@@ -95,7 +95,7 @@ export function VolumeControl({ volume, muted, onVolume, onToggleMute }: VolumeC
           min={0}
           max={1}
           step={0.01}
-          value={muted ? 0 : volume}
+          value={volume}
           onChange={e => {
             const v = parseFloat(e.target.value);
             onVolume(v);
