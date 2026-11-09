@@ -509,7 +509,18 @@ export function HalftoneLineup() {
         }
       } else if (isPastSectionBelow) {
         // Scrolled DOWN past Lineup -> THEME KEEPS ON PLAYING!
-        // Do NOT pause theme! Keep wasInSection true so visibility/tab change handling works.
+        // If driver audio was playing when exiting lineup, stop it and start theme
+        if (activeSnippetDriverRef.current) {
+          const driverAudio = driverAudioRef.current;
+          if (driverAudio) {
+            driverAudio.pause();
+          }
+          setActiveSnippetDriver(null);
+          activeSnippetDriverRef.current = null;
+          if (getGlobalSound()) {
+            playTheme();
+          }
+        }
         wasInSection.current = true;
       }
 
@@ -528,6 +539,19 @@ export function HalftoneLineup() {
         if (targetIdx !== activeIndexRef.current) {
           const dir = targetIdx >= activeIndexRef.current ? 'up' : 'down';
           triggerTransition(targetIdx, dir);
+
+          // The moment the user scrolls past the focused driver, resume the F1 theme
+          if (activeSnippetDriverRef.current) {
+            const driverAudio = driverAudioRef.current;
+            if (driverAudio) {
+              driverAudio.pause();
+            }
+            setActiveSnippetDriver(null);
+            activeSnippetDriverRef.current = null;
+            if (getGlobalSound()) {
+              playTheme();
+            }
+          }
         }
       }
     };
@@ -600,7 +624,7 @@ export function HalftoneLineup() {
       className="lineup-section"
       onPointerMove={handlePointerMove}
       style={{
-        height: '480vh', // Pinned scroll track for direct, smooth manual scrolling
+        height: '750vh', // Expanded pinned track for comfortable, controlled pacing per driver
       }}
     >
       {/* Audio element for F1Theme.mp3 */}
