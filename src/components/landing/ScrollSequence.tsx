@@ -75,6 +75,16 @@ export function ScrollSequence({
       );
     }
 
+    // 0.35 → 0.50  Hero peripheral labels and prompts fade out cleanly
+    const heroUI = hero.querySelectorAll<HTMLDivElement>('.hero-left-vertical-label, .hero-bottom-scroll, .hero-bottom-right-sound');
+    if (heroUI.length > 0) {
+      tl.to(
+        heroUI,
+        { opacity: 0, y: 12, ease: 'none', stagger: 0.03 },
+        0.35
+      );
+    }
+
     // 0.50 → 0.60  Title fades up and out
     tl.to(
       title,

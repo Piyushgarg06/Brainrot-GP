@@ -4,7 +4,7 @@
 //
 // To tune audio:
 //   1. Set audioOffset to seconds into the song where the good bit starts
-//   2. Set audioDuration to how many seconds to play (default 5)
+//   2. Set audioDuration to how many seconds to play (default 5 or 10)
 //   3. If a win theme exists, add firstName_lastName_win.mp3 and set
 //      audioOffsetWin, audioDurationWin, hasWinTheme: true
 //
@@ -35,15 +35,15 @@ export const DRIVERS: Record<string, Driver> = {
     code: 'VER', firstName: 'max', lastName: 'verstappen',
     name: 'Max Verstappen', audioFile: 'Max_Verstappen',
     team: 'Red Bull', teamColor: '#3671C6',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 14, audioDuration: 10, // max verstappen 14s
+    audioOffsetWin: 14, audioDurationWin: 10, hasWinTheme: false,
   },
   HAD: {
     code: 'HAD', firstName: 'isack', lastName: 'hadjar',
     name: 'Isack Hadjar', audioFile: 'Isack_Hadjar',
     team: 'Red Bull', teamColor: '#3671C6',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 3, audioDuration: 10, // isack hadjar 3s
+    audioOffsetWin: 3, audioDurationWin: 10, hasWinTheme: false,
   },
 
   // ── McLaren ─────────────────────────────────────────────────
@@ -67,15 +67,15 @@ export const DRIVERS: Record<string, Driver> = {
     code: 'LEC', firstName: 'charles', lastName: 'leclerc',
     name: 'Charles Leclerc', audioFile: 'Charles_Leclerc',
     team: 'Ferrari', teamColor: '#E8002D',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 16, audioDuration: 10, // charles leclerc 16s
+    audioOffsetWin: 16, audioDurationWin: 10, hasWinTheme: false,
   },
   HAM: {
     code: 'HAM', firstName: 'lewis', lastName: 'hamilton',
     name: 'Lewis Hamilton', audioFile: 'Lewis_Hamilton',
     team: 'Ferrari', teamColor: '#E8002D',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 2, audioDuration: 10, // lewis hamilton 2s
+    audioOffsetWin: 2, audioDurationWin: 10, hasWinTheme: false,
   },
 
   // ── Mercedes ─────────────────────────────────────────────────
@@ -99,15 +99,15 @@ export const DRIVERS: Record<string, Driver> = {
     code: 'ALO', firstName: 'fernando', lastName: 'alonso',
     name: 'Fernando Alonso', audioFile: 'Fernando_Alonso',
     team: 'Aston Martin', teamColor: '#229971',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 20, audioDuration: 10, // fernando alonso 20s
+    audioOffsetWin: 20, audioDurationWin: 10, hasWinTheme: false,
   },
   STR: {
     code: 'STR', firstName: 'lance', lastName: 'stroll',
     name: 'Lance Stroll', audioFile: 'Lance_Stroll',
     team: 'Aston Martin', teamColor: '#229971',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 7, audioDuration: 10, // lance stroll 7s
+    audioOffsetWin: 7, audioDurationWin: 10, hasWinTheme: false,
   },
 
   // ── Alpine ───────────────────────────────────────────────────
@@ -115,15 +115,15 @@ export const DRIVERS: Record<string, Driver> = {
     code: 'GAS', firstName: 'pierre', lastName: 'gasly',
     name: 'Pierre Gasly', audioFile: 'Pierre_Gassly',    // note: actual file is Pierre_Gassly.mp3
     team: 'Alpine', teamColor: '#FF87BC',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 5, audioDuration: 10, // pierre gasly 5s
+    audioOffsetWin: 5, audioDurationWin: 10, hasWinTheme: false,
   },
   COL: {
     code: 'COL', firstName: 'franco', lastName: 'colapinto',
     name: 'Franco Colapinto', audioFile: 'Franco_Colapinto',
     team: 'Alpine', teamColor: '#FF87BC',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 14, audioDuration: 10, // franco colapinto 14s
+    audioOffsetWin: 14, audioDurationWin: 10, hasWinTheme: false,
   },
 
   // ── Audi ─────────────────────────────────────────────────────
@@ -138,8 +138,8 @@ export const DRIVERS: Record<string, Driver> = {
     code: 'BOR', firstName: 'gabriel', lastName: 'bortoleto',
     name: 'Gabriel Bortoleto', audioFile: 'Gabriel_Bortoleto',
     team: 'Audi', teamColor: '#52E252',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 4, audioDuration: 10, // gabriel bortoleto 4s
+    audioOffsetWin: 4, audioDurationWin: 10, hasWinTheme: false,
   },
 
   // ── Racing Bulls ─────────────────────────────────────────────
@@ -154,8 +154,8 @@ export const DRIVERS: Record<string, Driver> = {
     code: 'LIN', firstName: 'arvid', lastName: 'lindblad',
     name: 'Arvid Lindblad', audioFile: 'Arvid_Lindblad',
     team: 'Racing Bulls', teamColor: '#6692FF',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 7, audioDuration: 10, // arvid lindblad 7s
+    audioOffsetWin: 7, audioDurationWin: 10, hasWinTheme: false,
   },
 
   // ── Haas ─────────────────────────────────────────────────────
@@ -186,8 +186,8 @@ export const DRIVERS: Record<string, Driver> = {
     code: 'SAI', firstName: 'carlos', lastName: 'sainz',
     name: 'Carlos Sainz', audioFile: 'Carlos_Sainz',
     team: 'Williams', teamColor: '#64C4FF',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 79, audioDuration: 10, // carlos sainz 1:19s (79s)
+    audioOffsetWin: 79, audioDurationWin: 10, hasWinTheme: false,
   },
 
   // ── Cadillac ─────────────────────────────────────────────────
@@ -195,15 +195,15 @@ export const DRIVERS: Record<string, Driver> = {
     code: 'PER', firstName: 'sergio', lastName: 'perez',
     name: 'Sergio Perez', audioFile: 'Sergio_Perez',
     team: 'Cadillac', teamColor: '#003DA5',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 25, audioDuration: 10, // sergio perez 25s
+    audioOffsetWin: 25, audioDurationWin: 10, hasWinTheme: false,
   },
   BOT: {
     code: 'BOT', firstName: 'valtteri', lastName: 'bottas',
     name: 'Valtteri Bottas', audioFile: 'Valterri_Bottas',  // note: actual file is Valterri_Bottas.mp3
     team: 'Cadillac', teamColor: '#003DA5',
-    audioOffset: 0, audioDuration: 10,
-    audioOffsetWin: 0, audioDurationWin: 10, hasWinTheme: false,
+    audioOffset: 100, audioDuration: 6, // valterri bottas 1:40 (100s) -- 1:46 (6s only)
+    audioOffsetWin: 100, audioDurationWin: 6, hasWinTheme: false,
   },
 };
 

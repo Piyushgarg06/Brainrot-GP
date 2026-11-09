@@ -12,7 +12,7 @@ function formatCaption(filename: string): string {
     .replace(/[#_-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
-    .toUpperCase() || 'IMAGE';
+    .toUpperCase() || 'VAULT ARTIFACT';
 }
 
 export function MemeCarousel({ images }: MemeCarouselProps) {
@@ -20,137 +20,42 @@ export function MemeCarousel({ images }: MemeCarouselProps) {
 
   if (images.length === 0) return null;
 
-  // Split images into two rows for dynamic visual depth
-  // Row 1 goes left, Row 2 goes right
-  const half = Math.ceil(images.length / 2);
-  const row1 = images.slice(0, half);
-  const row2 = images.slice(half);
-
-  // Triple the items to ensure seamless wrapping without gaps on wide displays
-  const row1Items = [...row1, ...row1, ...row1];
-  const row2Items = [...row2, ...row2, ...row2];
+  // Seamless duplication for infinite loop
+  const displayImages = [...images, ...images, ...images];
 
   return (
-    <section
-      style={{
-        padding: '80px 0',
-        backgroundColor: 'var(--surface)',
-        borderTop: '1px solid var(--border)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '24px',
-        overflow: 'hidden',
-        position: 'relative',
-      }}
-      aria-label="Meme marquee carousel"
-    >
-      {/* Header Info */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '0 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
-          color: 'var(--muted)',
-          letterSpacing: '0.08em',
-          marginBottom: '8px',
-        }}
-      >
-        <span>// PIT LANE INVENTORY</span>
-        <span>LIVE AUTOMATIC STREAM ({images.length} TOTAL)</span>
+    <section id="memes" className="vault-marquee-section" aria-label="Paddock Meme Vault">
+      <div className="vault-header">
+        <div className="header-meta-left">
+          <span className="vault-kicker">// 04 PADDOCK ARCHIVE</span>
+          <h3 className="vault-heading">INSHEDENT ARCHIVES</h3>
+        </div>
+        <div className="header-meta-right">
+          <span>{images.length} ARTIFACTS RECORDED</span>
+          <span className="live-dot-pulse">● LIVE STREAM</span>
+        </div>
       </div>
 
-      {/* Row 1: Scrolling Left */}
-      <div
-        className="marquee-container"
-        style={{
-          width: '100%',
-          overflow: 'hidden',
-          position: 'relative',
-          display: 'flex',
-          // Edge fade effect using CSS masking
-          maskImage: 'linear-gradient(to right, transparent, white 15%, white 85%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, white 15%, white 85%, transparent)',
-        }}
-      >
-        <div
-          className="marquee-track left"
-          style={{
-            display: 'flex',
-            gap: '16px',
-            animation: reduced ? 'none' : 'scroll-left 45s linear infinite',
-            // Allow wrapping
-            flexShrink: 0,
-          }}
-        >
-          {row1Items.map((img, i) => {
+      {/* Single, pristine continuous marquee stream with pause-on-hover */}
+      <div className="marquee-wrapper">
+        <div className={`marquee-stream ${reduced ? 'static' : ''}`}>
+          {displayImages.map((img, i) => {
             const caption = formatCaption(img);
             return (
-              <div
-                key={`r1-${img}-${i}`}
-                style={{
-                  width: '240px',
-                  backgroundColor: 'var(--surface-2)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '2px',
-                  padding: '10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  flexShrink: 0,
-                  transition: 'border-color 0.2s ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'var(--text)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'var(--border)';
-                }}
-              >
-                <div
-                  className="carbon-bg"
-                  style={{
-                    width: '100%',
-                    height: '180px',
-                    borderRadius: '2px',
-                    overflow: 'hidden',
-                  }}
-                >
+              <div key={`${img}-${i}`} className="vault-card">
+                <div className="card-image-box">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`/images/${img}`}
                     alt={caption}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      display: 'block',
-                      transition: 'transform 0.3s ease',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.transform = 'scale(1.03)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
+                    loading="lazy"
+                    className="card-img"
                   />
+                  <div className="card-scanline" />
                 </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '10px',
-                    color: 'var(--muted)',
-                    letterSpacing: '0.04em',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  // {caption}
+                <div className="card-caption-bar">
+                  <span className="caption-text">{caption}</span>
+                  <span className="caption-idx">#{String((i % images.length) + 1).padStart(2, '0')}</span>
                 </div>
               </div>
             );
@@ -158,113 +63,182 @@ export function MemeCarousel({ images }: MemeCarouselProps) {
         </div>
       </div>
 
-      {/* Row 2: Scrolling Right */}
-      <div
-        className="marquee-container"
-        style={{
-          width: '100%',
-          overflow: 'hidden',
-          position: 'relative',
-          display: 'flex',
-          maskImage: 'linear-gradient(to right, transparent, white 15%, white 85%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, white 15%, white 85%, transparent)',
-        }}
-      >
-        <div
-          className="marquee-track right"
-          style={{
-            display: 'flex',
-            gap: '16px',
-            animation: reduced ? 'none' : 'scroll-right 45s linear infinite',
-            flexShrink: 0,
-          }}
-        >
-          {row2Items.map((img, i) => {
-            const caption = formatCaption(img);
-            return (
-              <div
-                key={`r2-${img}-${i}`}
-                style={{
-                  width: '240px',
-                  backgroundColor: 'var(--surface-2)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '2px',
-                  padding: '10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  flexShrink: 0,
-                  transition: 'border-color 0.2s ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'var(--text)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'var(--border)';
-                }}
-              >
-                <div
-                  className="carbon-bg"
-                  style={{
-                    width: '100%',
-                    height: '180px',
-                    borderRadius: '2px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/images/${img}`}
-                    alt={caption}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      display: 'block',
-                      transition: 'transform 0.3s ease',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.transform = 'scale(1.03)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '10px',
-                    color: 'var(--muted)',
-                    letterSpacing: '0.04em',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  // {caption}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <style jsx>{`
+        .vault-marquee-section {
+          position: relative;
+          width: 100%;
+          padding: 80px 0 100px;
+          background: #000000;
+          overflow: hidden;
+          user-select: none;
+        }
 
-      <style>{`
-        @keyframes scroll-left {
+        .vault-header {
+          max-width: 1300px;
+          margin: 0 auto 36px;
+          padding: 0 36px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding-bottom: 18px;
+        }
+
+        .header-meta-left {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .vault-kicker {
+          font-family: var(--font-mono);
+          font-size: 11px;
+          letter-spacing: 0.22em;
+          color: rgba(255, 255, 255, 0.45);
+        }
+
+        .vault-heading {
+          font-family: var(--font-display);
+          font-size: clamp(24px, 3.5vw, 36px);
+          font-weight: 800;
+          letter-spacing: -0.02em;
+          color: #ffffff;
+          margin: 0;
+        }
+
+        .header-meta-right {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          letter-spacing: 0.14em;
+          color: rgba(255, 255, 255, 0.45);
+        }
+
+        .live-dot-pulse {
+          color: #ff334b;
+          font-weight: 600;
+        }
+
+        .marquee-wrapper {
+          position: relative;
+          width: 100%;
+          overflow: hidden;
+          display: flex;
+          mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+        }
+
+        .marquee-stream {
+          display: flex;
+          gap: 20px;
+          animation: marqueeScroll 65s linear infinite;
+          will-change: transform;
+        }
+
+        .marquee-wrapper:hover .marquee-stream {
+          animation-play-state: paused;
+        }
+
+        @keyframes marqueeScroll {
           0% {
-            transform: translateX(0);
+            transform: translate3d(0, 0, 0);
           }
           100% {
-            transform: translateX(calc(-100% / 3));
+            transform: translate3d(-33.333%, 0, 0);
           }
         }
-        @keyframes scroll-right {
-          0% {
-            transform: translateX(calc(-100% / 3));
+
+        .vault-card {
+          width: 270px;
+          flex-shrink: 0;
+          background: #0d0d0d;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+          padding: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          cursor: pointer;
+          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .vault-card:hover {
+          transform: translateY(-4px) scale(1.02);
+          border-color: rgba(255, 51, 75, 0.5);
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 51, 75, 0.15);
+        }
+
+        .card-image-box {
+          position: relative;
+          width: 100%;
+          height: 190px;
+          border-radius: 2px;
+          overflow: hidden;
+          background: #141414;
+        }
+
+        .card-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          filter: grayscale(40%) contrast(115%);
+          transition: filter 0.3s ease, transform 0.3s ease;
+        }
+
+        .vault-card:hover .card-img {
+          filter: grayscale(0%) contrast(100%);
+          transform: scale(1.04);
+        }
+
+        .card-scanline {
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.12) 0px,
+            rgba(0, 0, 0, 0.12) 1px,
+            transparent 1px,
+            transparent 3px
+          );
+          pointer-events: none;
+        }
+
+        .card-caption-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 2px 4px;
+          font-family: var(--font-mono);
+          font-size: 10px;
+          letter-spacing: 0.08em;
+          color: rgba(255, 255, 255, 0.55);
+        }
+
+        .caption-text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 200px;
+        }
+
+        .caption-idx {
+          color: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+          .vault-card {
+            width: 210px;
           }
-          100% {
-            transform: translateX(0);
+          .card-image-box {
+            height: 150px;
+          }
+          .vault-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
           }
         }
       `}</style>
