@@ -17,6 +17,29 @@ export function DashboardCTA() {
           <Link
             href="/dashboard"
             className="cta-dashboard-btn"
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '14px',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              background: 'transparent',
+              padding: '12px 28px',
+              borderRadius: '2px',
+              textDecoration: 'none',
+              display: 'inline-block',
+              letterSpacing: '0.02em',
+              transition: 'background 0.15s ease, border-color 0.15s ease, transform 0.15s ease',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255, 255, 255, 0.08)';
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = '#ff334b';
+              (e.currentTarget as HTMLAnchorElement).style.color = '#ffffff';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(255, 255, 255, 0.25)';
+              (e.currentTarget as HTMLAnchorElement).style.color = '#ffffff';
+            }}
           >
             Open Dashboard →
           </Link>
@@ -97,10 +120,12 @@ export function DashboardCTA() {
           margin-top: 8px;
         }
 
-        .cta-dashboard-btn {
+        .cta-dashboard-btn,
+        .cta-dashboard-btn:visited,
+        .cta-dashboard-btn:active {
           font-family: var(--font-body);
           font-size: 14px;
-          color: #ffffff;
+          color: #ffffff !important;
           border: 1px solid rgba(255, 255, 255, 0.25);
           background: transparent;
           padding: 12px 28px;

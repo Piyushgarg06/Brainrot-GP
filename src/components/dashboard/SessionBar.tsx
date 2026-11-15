@@ -297,54 +297,40 @@ export function SessionBar({ f1State }: SessionBarProps) {
               ×
             </button>
 
-            <h2>🚀 Getting Started</h2>
+            <h2>🏎️ How to Use BrainrotGP</h2>
             <ol>
-              <li>Open Brainrot-GP in your browser.</li>
-              <li>Click anywhere on the page and interact for a few seconds <em>(this enables audio)</em>.</li>
-              <li>Open Brainrot-GP again in a <strong>second tab</strong>.</li>
-              <li>Keep one Brainrot-GP tab visible while you watch the race.</li>
+              <li><strong>Select Your Driver:</strong> Click your favorite driver on the leaderboard to track their position battles and custom audio triggers.</li>
+              <li><strong>Enable Audio:</strong> Ensure the audio volume slider at the bottom-left is unmuted.</li>
+              <li><strong>Second-Screen Companion:</strong> Keep BrainrotGP running alongside your live race broadcast (on a second monitor or in the background).</li>
             </ol>
 
             <hr className="section-divider" />
 
-            <h3>🔊 Why two tabs?</h3>
+            <h3>🪟 Windows Desktop App</h3>
             <p>
-              Modern browsers block autoplaying audio until you've interacted with a page.
-              Opening it again after interacting ensures race event sounds play correctly.
+              When running the BrainrotGP Windows App, live telemetry and driver audio play continuously in the background even when the app is minimized or you switch to other windows.
             </p>
 
             <hr className="section-divider" />
 
-            <h3>💡 Best Experience</h3>
-            <ul>
-              <li data-icon="🖥️">Use it on a desktop or laptop.</li>
-              <li data-icon="📌">Keep the Brainrot-GP tab visible (pin it at the bottom or side of your screen).</li>
-              <li data-icon="🚫">It may not work reliably in fullscreen due to browser autoplay restrictions.</li>
-            </ul>
-
-            <hr className="section-divider" />
-
-            <h3>⚠️ Stream Delay</h3>
+            <h3>⏱️ Live Timing & Broadcast Delay</h3>
             <p>
-              Brainrot-GP reacts to live timing data. If you're watching on FanCode, the stream is
-              typically ~15 seconds behind, so you'll often <strong>hear</strong> an event before
-              you <strong>see</strong> it on the broadcast.
+              BrainrotGP connects directly to real-time track telemetry. Because live video streams (F1 TV, Sky Sports, FanCode) typically carry a 10–25s broadcast delay, you will often <strong>hear</strong> an overtake, leader swap, or pit move right before the broadcast feed shows it!
             </p>
 
             <hr className="section-divider" />
 
-            <h3>🎵 What You'll Hear</h3>
+            <h3>🎵 Live Audio Triggers</h3>
             <ul>
-              <li data-icon="🏁">Leader changes</li>
-              <li data-icon="⚡">Fastest laps</li>
-              <li data-icon="📈">Position gains (for your favourite driver)</li>
-              <li data-icon="🏆">Race winner</li>
+              <li data-icon="🏁"><strong>P1 Leader Changes:</strong> Instant alert and theme when a new driver takes P1.</li>
+              <li data-icon="📈"><strong>Position Battles:</strong> Custom radio audio whenever your selected driver advances.</li>
+              <li data-icon="⚡"><strong>Fastest Laps:</strong> Purple sector alerts when a driver sets the benchmark time.</li>
+              <li data-icon="🏆"><strong>Race Finish:</strong> Checkered flag celebration for the Grand Prix winner.</li>
             </ul>
 
             <div className="tip-box">
               <p>
-                💡 <strong>Tip:</strong> Leave Brainrot-GP running throughout the race. It works best
-                when it's open for the entire session.
+                💡 <strong>Tip for Live Races:</strong> Leave the dashboard open throughout the entire Grand Prix session. It continuously updates telemetry and triggers audio in real time.
               </p>
             </div>
           </div>

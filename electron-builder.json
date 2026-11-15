@@ -3,6 +3,12 @@
   "productName": "BrainrotGP",
   "copyright": "Copyright © 2026 BrainrotGP",
 
+  "publish": {
+    "provider": "github",
+    "owner": "Piyushgarg06",
+    "repo": "Brainrot-GP"
+  },
+
   "directories": {
     "output": "dist"
   },

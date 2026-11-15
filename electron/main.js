@@ -11,7 +11,8 @@
  *  4. Works out-of-the-box with zero configuration
  */
 
-const { app, BrowserWindow, shell, Menu } = require('electron');
+const { app, BrowserWindow, shell, Menu, dialog } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const http = require('http');
 const net  = require('net');
@@ -213,11 +214,78 @@ function buildMenu() {
     {
       label: 'Help',
       submenu: [
+        {
+          label: 'Check for Updates...',
+          click: () => {
+            if (DEV_MODE) {
+              dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: 'Development Mode',
+                message: 'Update checks are disabled in development mode.',
+              });
+              return;
+            }
+            autoUpdater.checkForUpdatesAndNotify().catch((err) => {
+              dialog.showMessageBox(mainWindow, {
+                type: 'error',
+                title: 'Update Error',
+                message: 'Failed to check for updates: ' + (err.message || err),
+              });
+            });
+          },
+        },
+        { type: 'separator' },
         { label: 'GitHub Repository', click: () => shell.openExternal('https://github.com/Piyushgarg06/Brainrot-GP') },
         { label: 'OpenF1 Live API', click: () => shell.openExternal('https://openf1.org') },
       ],
     },
   ]);
+}
+
+// ── Auto Updater ─────────────────────────────────────────────────────────────
+function setupAutoUpdater() {
+  if (DEV_MODE) {
+    return;
+  }
+
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  autoUpdater.on('update-available', (info) => {
+    console.log('[BrainrotGP] Update available:', info.version);
+  });
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('[BrainrotGP] Update downloaded:', info.version);
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      dialog
+        .showMessageBox(mainWindow, {
+          type: 'info',
+          title: 'Update Ready',
+          message: `A new version of BrainrotGP (v${info.version}) has been downloaded.`,
+          detail: 'Restart BrainrotGP now to apply the update, or it will automatically apply the next time you open the app.',
+          buttons: ['Restart & Install', 'Later'],
+          defaultId: 0,
+          cancelId: 1,
+        })
+        .then((returnValue) => {
+          if (returnValue.response === 0) {
+            autoUpdater.quitAndInstall();
+          }
+        });
+    }
+  });
+
+  autoUpdater.on('error', (err) => {
+    console.error('[BrainrotGP] Auto-updater error:', err == null ? 'unknown' : (err.stack || err).toString());
+  });
+
+  // Check for updates on launch after 3 seconds
+  setTimeout(() => {
+    autoUpdater.checkForUpdatesAndNotify().catch((err) => {
+      console.error('[BrainrotGP] Startup update check failed:', err);
+    });
+  }, 3000);
 }
 
 // ── App Lifecycle ─────────────────────────────────────────────────────────────
@@ -240,6 +308,7 @@ app.whenReady().then(async () => {
   }
 
   createMainWindow();
+  setupAutoUpdater();
 });
 
 app.on('window-all-closed', () => {

@@ -1,194 +1,137 @@
 # 🏎️ BrainrotGP
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.2.9-black?style=for-the-badge\&logo=nextdotjs)](https://nextjs.org/)
-[![Python Proxy](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge\&logo=python)](https://www.python.org/)
-[![Deployment](https://img.shields.io/badge/Deploy-Vercel%20%2B%20Railway-000000?style=for-the-badge\&logo=vercel)](https://vercel.com/)
-[![Status](https://img.shields.io/badge/Vibe%20Check-Passed%20\(Barely\)-brightgreen?style=for-the-badge)]()
+[![Release](https://img.shields.io/github/v/release/Piyushgarg06/Brainrot-GP?style=for-the-badge&color=e10600&label=Release)](https://github.com/Piyushgarg06/Brainrot-GP/releases)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.9-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
+[![Electron](https://img.shields.io/badge/Electron-45.3-47848F?style=for-the-badge&logo=electron)](https://www.electronjs.org/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows)](https://github.com/Piyushgarg06/Brainrot-GP/releases)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-> *"Bro just held the outside line through Eau Rouge and gained 3 positions while crying to his driver's audio clip."*
-
-> ## 🪟 Windows Desktop App (Recommended)
->
-> **Download BrainrotGP for Windows from [GitHub Releases](https://github.com/Piyushgarg06/Brainrot-GP/releases)**
->
-> Running BrainrotGP natively on Windows solves two key limitations:
-> 1. **No Cloud Server Limits:** The desktop app runs locally on your machine and communicates directly with the OpenF1 API, bypassing cloud backend rate limits and hosting exhaustion completely.
-> 2. **Uninterrupted Background Audio:** Windows allows the desktop app to stream audio, live telemetry, and driver radio clips continuously even when minimized or when you switch windows/monitors.
->
-> Simply download the latest `BrainrotGP-Setup-*.exe` from the Releases page, install, and launch!
-
-**BrainrotGP** is a professional-grade, highly unnecessary, and dangerously copium-fueled second-screen companion for Formula 1 races. Built specifically for fans who watch Grand Prix at 3:00 AM, desperately refreshing timing screens like it will somehow help their favorite driver catch Max Verstappen.
-
-It hooks into live F1 telemetry data to dynamically play **brainrot audio clips** every time a driver makes a move, crashes, or takes the lead.
-
-Yes, you will hear it.
-Yes, it will ruin your sleep schedule.
+> **BrainrotGP** is a dynamic, high-fidelity second-screen companion for Formula 1 races. Built for motorsport enthusiasts who track sector deltas and telemetry at 3 AM, BrainrotGP connects live race timing with driver-specific audio triggers, real-time leaderboard shifts, and race telemetry alerts.
 
 ---
 
-## 🏁 Key Features
+## 🪟 Windows Desktop Application (Recommended)
 
-### 📊 Real-Time Leaderboard
+[![Download for Windows](https://img.shields.io/badge/Download_for_Windows-v0.2.0-e10600?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/Piyushgarg06/Brainrot-GP/releases/latest)
 
-Get live standings, interval gaps, DNF alerts, and fastest laps.
+Running BrainrotGP natively as a Windows application delivers the optimal race-day experience:
 
-It’s like the official F1 timing screen, but designed by someone who has had four Energy Drinks and hasn't closed TikTok in 48 hours.
+1. **Zero Cloud Hosting Bottlenecks:** The desktop app runs locally on your machine and communicates directly with the OpenF1 live telemetry API, eliminating cloud proxy limits and server bandwidth caps.
+2. **Persistent Background Audio:** Unlike standard browser tabs that throttle or pause Web Audio when minimized or in the background, the Windows desktop app continues processing telemetry and playing driver overtake clips while you watch the broadcast full-screen on another monitor.
+3. **Automated Updates:** Equipped with native auto-updater integration. Every time you launch BrainrotGP, it checks GitHub Releases for new updates and can update seamlessly with a single click.
 
-### 🔔 Context-Aware Event Toasts
+👉 **[Download the Latest Windows Installer (`BrainrotGP-Setup-*.exe`)](https://github.com/Piyushgarg06/Brainrot-GP/releases/latest)**
 
-Stay informed with real-time HUD alerts:
+---
 
-* **Leader Changes:** Play celebratory/panic soundscapes depending on who takes P1.
-* **Aggressive Overtakes:** Instantly triggers toasts when a driver gains 3+ positions.
-* **Fastest Laps & DNFs:** Visual and auditory notifications when a driver finds the barrier or purple sectors.
-* **The Winner Announcement:** Flashes the checkered flag UI when the race is called.
+## ✨ Features
 
-### 🔊 Dynamic Driver Audio Engine
+### 📊 Precision Live Leaderboard
+- Real-time driver order, interval gaps to leader and interval ahead, pit stop indicators, and DNF tracking.
+- Fast sector identification and purple lap indicators powered by OpenF1 and FastF1 live telemetry.
+- Clean high-contrast typography engineered for readability across multiple displays.
 
-Every driver is wired up with their own iconic voice clips and memes:
+### 🔊 Dynamic Audio & Event Engine
+- **Driver Radio & Anthems:** Iconic driver clips and soundtrack moments triggered dynamically on overtakes, lead changes, fastest laps, and retirements.
+- **Favorite Driver Focus:** Pin your favorite driver to the top of the pit wall to prioritize their position changes and team radio triggers.
+- **Focus-Aware Playback:** The landing page theme audio halts when the application is unfocused or minimized, while the live race dashboard continues monitoring telemetry and playing audio alerts in the background.
 
-* **Max Verstappen:** Whining about wind gusts or saying *"haha yes, lovely race guys"*.
-* **Carlos Sainz:** Belting out *"Smooth Operator"* into your speakers.
-* **Charles Leclerc:** High-fidelity screaming and despair (mostly despair).
-* **Favorite Driver Mode (Copium Engine):** Pin your favorite driver to the top of your dashboard. Any time they gain a position, the app injects a hit of pure auditory dopamine. If they DNF, we hope you like sad violin.
+### ⏱️ Broadcast Delay Synchronization
+- Live television and streaming broadcasts (such as F1 TV, Sky Sports, or ESPN) often have a 10 to 60-second broadcast latency.
+- Adjust the built-in stream delay slider on the dashboard to synchronize telemetry toasts and audio cues down to the second with your broadcast.
 
-### 🏁 Smart Race-End State
-
-Most timing apps sit there displaying a pulsing green `LIVE 🟢` badge for six hours after the podium ceremony.
-
-BrainrotGP reads the official F1 session status. When `SessionStatus` is marked finished:
-
-* The UI locks down.
-* Polling slows to a gentle walk.
-* The winner's audio plays exactly once.
-
-No more six-hour `LIVE 🟢` hallucinations.
-
-### 📡 Multi-Tab Broadcast Syncing
-
-Uses the browser's `BroadcastChannel` API to synchronize event states and audio triggers across multiple screens.
-
-If you have three monitors and two laptops open like a race engineer, they will play the audio in unified, deafening harmony.
+### 🏁 Verified Session State Transitions
+- Automatically responds to official FIA session status changes (`Started`, `Finished`, `Finalised`).
+- Prevents stale polling loops once the checkered flag waves, concluding the session cleanly with the race winner's anthem.
 
 ---
 
 ## 🛠️ Architecture
 
 ```text
-┌──────────────────────────────────────┐        ┌──────────────────────────────┐
-│      Next.js Frontend (Vercel)       │◄──────▶│     Python Proxy Server      │
-│                                      │        │     (Railway / Docker)       │
-│  • /dashboard — The Chaos Hub        │        │                              │
-│  • useF1Data   — Intelligent Polling │        │  • FastF1 SignalR Client     │
-│  • useAudio    — Web Audio API       │        │  • Raw Live Timing Feed      │
-│  • BroadcastChannel — Multi-tab Sync │        │  • GET /live API Endpoint    │
-└──────────────────────────────────────┘        └──────────────────────────────┘
-                    │
-                    │ Fallback
-                    ▼
-          ┌───────────────────┐
-          │ OpenF1 Public API │
-          │  api.openf1.org   │
-          └───────────────────┘
+┌────────────────────────────────────────────────────────┐
+│              BrainrotGP Desktop (Windows)              │
+│                                                        │
+│  ┌─────────────────────────┐  ┌──────────────────────┐ │
+│  │   Electron 45 Runtime   │  │   Embedded Next 16   │ │
+│  │  • Native Auto-Updater  │  │  • Telemetry Polling │ │
+│  │  • Background Audio     │  │  • Web Audio Engine  │ │
+│  │  • Windows Window Shell │  │  • GSAP / Motion UI  │ │
+│  └─────────────────────────┘  └──────────────────────┘ │
+└───────────────────────────┬────────────────────────────┘
+                            │
+            Direct Telemetry Requests (HTTPS)
+                            ▼
+               ┌─────────────────────────┐
+               │    OpenF1 Live API      │
+               │    (api.openf1.org)     │
+               └─────────────────────────┘
 ```
-
-The frontend operates on a hybrid data retrieval strategy:
-
-1. **Primary Route:** Attempts to retrieve high-frequency data from the Python Proxy Server.
-2. **Fallback Route:** If the proxy goes offline (or the hosted free allocation is exhausted), it seamlessly degrades to the public OpenF1 REST API.
-
-For the **full intended experience**, run the Python proxy locally.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started (Development)
 
-### 1. Frontend Setup
+If you wish to contribute, inspect the codebase, or run BrainrotGP locally from source:
 
-Make sure you have Node.js installed, then run:
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18.17+ or v20+)
+- [Git](https://git-scm.com/)
 
+### 1. Clone the Repository
 ```bash
-# Clone the repository
-git clone https://github.com/Piyushgarg06/Brainrot-GP-The-unnecessary-second-screen-companion-for-Formula-1.git
+git clone https://github.com/Piyushgarg06/Brainrot-GP.git
+cd Brainrot-GP
+```
 
-cd brainrot-gp
-
-# Install dependencies
+### 2. Install Dependencies
+```bash
 npm install
-
-# Run the development server
-npm run dev
 ```
 
-Open `http://localhost:3000` and prepare your ears.
-
----
-
-### 2. Python Proxy Setup
-
-**Recommended if you want the full BrainrotGP experience.**
-
-By default, the frontend can fall back to the public OpenF1 API. However, OpenF1 has a slight delay and rate limits.
-
-To get raw, low-latency data from F1's official SignalR timing feed:
-
+### 3. Run Development Server
 ```bash
-# Install Python packages
-pip install -r requirements.txt
+# Web development mode
+npm run dev
 
-# Start the proxy server
-python f1_live_leaderboard.py
+# Electron desktop development mode
+npm run electron:dev
 ```
 
-The proxy will run on:
-
-```text
-http://localhost:8080
+### 4. Build Windows Executable
+To package the standalone Windows installer locally:
+```bash
+npm run electron:build
 ```
-
-Add the following environment variable to your `.env.local` file:
-
-```env
-NEXT_PUBLIC_FASTF1_URL=http://localhost:8080
-```
-
-Then restart the Next.js development server.
-
----
-
-## 🔮 Roadmap & Future Features
-
-We are planning to make this even more unhinged with the following additions:
-
-* 🧠 **Driver Trivia Games:** An interactive trivia module where you can play quiz games during boring safety car periods. Guess who said the unhinged radio quote, match the driver to their career DNFs, or test your F1 brainrot knowledge to win virtual "copium points".
-
-* 🎙️ **Custom Soundboard Uploader:** Upload your own audio files and map them to specific live events — e.g. play your own screams when your driver gets a 5-second penalty.
-
-* 📊 **Telemetry HUD Canvas:** A live-rendered canvas HUD showing throttle/brake application, RPM, and gear selection in real-time.
-
-* 📱 **PWA Installation:** Install BrainrotGP on your phone to keep it running next to your TV screen.
+The resulting installer will be located in the `dist/` directory.
 
 ---
 
 ## ⚙️ Tech Stack
 
-| Component       | Technology              | Why?                                                                   |
-| --------------- | ----------------------- | ---------------------------------------------------------------------- |
-| **Framework**   | Next.js 16 / React 19   | Cutting edge. Server components & React 19 hydration.                  |
-| **Styling**     | Vanilla CSS             | Tailored design tokens. No Tailwind utility bloat. We are not cowards. |
-| **Animations**  | Framer Motion + GSAP    | Premium micro-interactions and smooth orbit components.                |
-| **Audio**       | Web Audio API           | Low-latency audio manipulation and tab synchronization.                |
-| **Live Timing** | FastF1 SignalR + OpenF1 | Live timing data with a public API fallback.                           |
-| **Backend**     | Python 3.11 + Docker    | Asynchronous live timing proxy.                                        |
+| Layer | Technologies |
+| :--- | :--- |
+| **Desktop Shell** | Electron 45, electron-updater, electron-builder |
+| **Frontend Framework** | Next.js 16 (App Router), React 19, TypeScript |
+| **Animation & UI** | GSAP, Framer Motion, Lenis Smooth Scroll |
+| **Audio Processing** | Web Audio API (Low-latency programmatic audio routing) |
+| **Telemetry Provider** | OpenF1 REST API, FastF1 telemetry integration |
 
 ---
 
-## 🤝 Credits
+## 🤝 Contributing
 
-Created and maintained by **[Piyush Garg](https://github.com/piyushgarg-dev)**.
-
-> **Disclaimer:** BrainrotGP is an unofficial fan project and is not affiliated with, endorsed by, or associated with Formula 1, the FIA, or any driver/team. We just really like F1 and brainrot memes.
+Contributions, bug reports, and driver clip suggestions are welcome.
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/NewFeature`)
+3. Commit your Changes (`git commit -m 'Add NewFeature'`)
+4. Push to the Branch (`git push origin feature/NewFeature`)
+5. Open a Pull Request
 
 ---
 
-*"It’s not a skill issue if your favorite driver is P1 in our hearts."*
+## 📄 License & Disclaimer
+
+Distributed under the MIT License.
+
+*Disclaimer: BrainrotGP is an independent open-source fan project. It is not affiliated with, endorsed by, or associated with Formula 1, Formula One Licensing B.V., Formula One Management Ltd, or the FIA. All trademarks and driver names belong to their respective owners.*
