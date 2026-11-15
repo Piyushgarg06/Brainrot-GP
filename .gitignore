@@ -43,4 +43,3 @@ next-env.d.ts
 # Electron build output
 /dist/
 /dist-electron/
-electron/icons/*.ico
