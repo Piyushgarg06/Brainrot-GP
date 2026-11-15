@@ -12,7 +12,7 @@
 
 ## 🪟 Windows Desktop Application (Recommended)
 
-[![Download for Windows](https://img.shields.io/badge/Download_for_Windows-v0.2.0-e10600?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/Piyushgarg06/Brainrot-GP/releases/latest)
+[![Download for Windows](https://img.shields.io/badge/Download_for_Windows-v0.2.1-e10600?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/Piyushgarg06/Brainrot-GP/releases/latest)
 
 Running BrainrotGP natively as a Windows application delivers the optimal race-day experience:
 

@@ -1,230 +1,209 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { useF1Data }             from '@/hooks/useF1Data';
-import { useAudioEngine }        from '@/hooks/useAudioEngine';
-import { useEventQueue }         from '@/hooks/useEventQueue';
-import { useBroadcastChannel }   from '@/hooks/useBroadcastChannel';
-import { SessionBar }            from '@/components/dashboard/SessionBar';
-import { DriverGrid }            from '@/components/dashboard/DriverGrid';
-import { EventToast }            from '@/components/dashboard/EventToast';
-import { VolumeControl }         from '@/components/dashboard/VolumeControl';
-import { ConnectionStatus }      from '@/components/dashboard/ConnectionStatus';
-import { DriverPicker, loadFavoriteDriver } from '@/components/dashboard/DriverPicker';
-import { DRIVERS }               from '@/lib/drivers';
-import { PRIORITY }              from '@/lib/eventPriority';
-import type { F1Event }          from '@/types/events';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { isDesktopApp } from '@/lib/isDesktop';
+import { LiveDashboard } from '@/components/dashboard/LiveDashboard';
 
-type ConnectionState = 'connected' | 'reconnecting' | 'error' | 'restricted' | 'finished';
-
-// ── Dashboard page ─────────────────────────────────────────────
 export default function DashboardPage() {
-  // Favorite driver — loaded from localStorage on mount
-  const [favoriteCode, setFavoriteCode] = useState<string | null>(null);
-  useEffect(() => { setFavoriteCode(loadFavoriteDriver()); }, []);
+  const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
 
-  const f1State = useF1Data();
-  const audio   = useAudioEngine();
-
-  const [audioReady, setAudioReady] = useState(false);
-  const [activeCode, setActiveCode] = useState<string | null>(null);
-  const preloadedRef                = useRef(false);
-
-  const connectionState: ConnectionState =
-    f1State.raceFinished    ? 'finished'
-    : f1State.error         ? (f1State.error.includes('401') ? 'restricted' : 'error')
-    : f1State.isLive        ? 'connected'
-    : f1State.lastUpdated   ? 'reconnecting'
-    : 'reconnecting';
-
-  // Refs to break circular dependency: useEventQueue <-> useBroadcastChannel
-  const injectToastRef = useRef<(event: F1Event) => void>(() => {});
-  const playAudioRef   = useRef<(event: F1Event) => void>(() => {});
-
-  // ── Audio playback helper ─────────────────────────────────────
-  const playAudio = useCallback((event: F1Event) => {
-    const driver = DRIVERS[event.driverCode];
-    if (!driver || !audioReady) return;
-    const isWin = event.type === 'WINNER';
-    audio.play(
-      driver.audioFile,
-      event.priority,
-      isWin,
-      isWin ? driver.audioOffsetWin   : driver.audioOffset,
-      isWin ? driver.audioDurationWin : driver.audioDuration,
-      driver.hasWinTheme
-    );
-    setActiveCode(event.driverCode);
-    setTimeout(() => setActiveCode(null), 400);
-  }, [audio, audioReady]);
-
-  // Keep playAudioRef updated with the fresh callback
   useEffect(() => {
-    playAudioRef.current = playAudio;
-  }, [playAudio]);
-
-  // ── BroadcastChannel — receive events from OTHER tabs ─────────
-  const onRemoteEvent = useCallback((event: F1Event) => {
-    injectToastRef.current(event);
-    playAudioRef.current(event);
+    setIsDesktop(isDesktopApp());
   }, []);
 
-  const { broadcast } = useBroadcastChannel(onRemoteEvent);
-
-  // ── handleLocalEvent — callback for queue-detected events ─────
-  const handleLocalEvent = useCallback((event: F1Event) => {
-    playAudio(event);
-    broadcast(event);
-  }, [playAudio, broadcast]);
-
-  // Initialize event queue hook with callback
-  const { toasts, dismissToast, injectToast } = useEventQueue(f1State, favoriteCode, handleLocalEvent);
-
-  // Keep injectToastRef updated
-  useEffect(() => {
-    injectToastRef.current = injectToast;
-  }, [injectToast]);
-
-  // ── Init AudioContext on first user gesture ──────────────────
-  useEffect(() => {
-    const init = async () => { await audio.init(); setAudioReady(true); };
-    const h = () => { void init(); };
-    window.addEventListener('click',   h, { once: true });
-    window.addEventListener('keydown', h, { once: true });
-    return () => {
-      window.removeEventListener('click',   h);
-      window.removeEventListener('keydown', h);
-    };
-  }, [audio]);
-
-  // ── Preload all driver audio once ────────────────────────────
-  useEffect(() => {
-    if (preloadedRef.current) return;
-    preloadedRef.current = true;
-    for (const driver of Object.values(DRIVERS)) {
-      audio.preload(driver.audioFile, `/audio/${driver.audioFile}.mp3`);
-      if (driver.hasWinTheme) {
-        audio.preload(`${driver.audioFile}_win`, `/audio/${driver.audioFile}_win.mp3`);
-      }
-    }
-  }, [audio]);
-
-  // ── Mobile banner ─────────────────────────────────────────────
-  const [showMobileBanner, setShowMobileBanner] = useState(false);
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!sessionStorage.getItem('mobile-banner-dismissed')) setShowMobileBanner(true);
-  }, []);
-  const dismissMobileBanner = () => {
-    sessionStorage.setItem('mobile-banner-dismissed', '1');
-    setShowMobileBanner(false);
-  };
-
-  const fastestCode = f1State.fastestLap?.driverCode ?? null;
-
-  return (
-    <div
-      style={{
-        width:           '100vw',
-        height:          '100vh',
-        overflow:        'hidden',
-        display:         'flex',
-        flexDirection:   'column',
-        backgroundColor: 'var(--bg)',
-      }}
-    >
-      <SessionBar f1State={f1State} />
-
-      {showMobileBanner && (
-        <div
-          className="mobile-only"
-          style={{
-            borderBottom: '1px solid var(--border)', padding: '8px 16px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
-          }}
-        >
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--muted)' }}>
-            best experienced as a second screen on desktop
-          </span>
-          <button
-            onClick={dismissMobileBanner}
-            aria-label="Dismiss banner"
-            style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px' }}
-          >
-            ×
-          </button>
-        </div>
-      )}
-
-      {/* Main split layout */}
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
-
-        {/* Left — Driver Grid 65% */}
-        <div
-          className="col-left"
-          style={{ flex: '0 0 65%', overflowY: 'auto', borderRight: '1px solid var(--border)' }}
-        >
-          <DriverGrid
-            f1State={f1State}
-            fastestDriverCode={fastestCode}
-            activeEventCode={activeCode}
-            favoriteDriverCode={favoriteCode}
-          />
-        </div>
-
-        {/* Right — Event Feed 35% */}
-        <div
-          className="col-right"
-          style={{ flex: '0 0 35%', overflowY: 'auto', padding: '16px' }}
-        >
-          <div style={{
-            fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--muted)',
-            marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.08em',
-          }}>
-            Event Log
-          </div>
-          {toasts.length === 0 ? (
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--muted)', opacity: 0.45 }}>
-              — waiting for events
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {toasts.map(event => (
-                <div key={event.id} style={{ borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--muted)', textTransform: 'uppercase', marginBottom: '2px' }}>
-                    {event.type}
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--text)' }}>
-                    {event.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+  // Mounting / initial detection state
+  if (isDesktop === null) {
+    return (
+      <div
+        style={{
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: '#000000',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'rgba(255, 255, 255, 0.4)',
+          fontFamily: 'Courier New, monospace',
+          fontSize: '12px',
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
+        }}
+      >
+        Initializing Telemetry Link...
       </div>
+    );
+  }
 
-      {/* Fixed overlays */}
-      <EventToast toasts={toasts} onDismiss={dismissToast} />
-      <VolumeControl
-        volume={audio.volume}
-        muted={audio.muted}
-        onVolume={audio.setVolume}
-        onToggleMute={audio.toggleMute}
-      />
-      <ConnectionStatus state={connectionState} lastUpdated={f1State.lastUpdated} />
+  // If accessed on the web, remove dashboard access and prompt download
+  if (!isDesktop) {
+    return (
+      <div className="web-gate-wrapper">
+        <div className="ambient-grid" />
+        <div className="ambient-glow" />
 
-      {/* Favorite driver picker — bottom-center */}
-      <DriverPicker value={favoriteCode} onChange={setFavoriteCode} />
+        <div className="web-gate-card">
+          <div className="gate-kicker">// 03 PIT WALL ACCESS · DESKTOP ONLY</div>
+          <h1 className="gate-title">BRAINROTGP IS A WINDOWS APP</h1>
+          <p className="gate-desc">
+            To provide zero cloud server limits, direct real-time telemetry from OpenF1, and persistent background audio while you watch the Grand Prix, the dashboard is exclusively available on the native Windows application.
+          </p>
 
-      <style>{`
-        .mobile-only { display: none; }
-        @media (max-width: 767px) {
-          .mobile-only { display: flex; }
-          .col-left  { flex: 0 0 100% !important; border-right: none !important; }
-          .col-right { display: none; }
-        }
-      `}</style>
-    </div>
-  );
+          <div className="gate-actions">
+            <a
+              href="https://github.com/Piyushgarg06/Brainrot-GP/releases/latest"
+              className="gate-download-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Download Brainrot-GP for Windows ↓
+            </a>
+            <Link href="/" className="gate-back-link">
+              ← Return to Home
+            </Link>
+          </div>
+
+          <div className="gate-specs">
+            <span>DIRECT OPENF1 CONNECTION</span>
+            <span>·</span>
+            <span>PERSISTENT BACKGROUND AUDIO</span>
+            <span>·</span>
+            <span>AUTO-UPDATES</span>
+          </div>
+        </div>
+
+        <style jsx>{`
+          .web-gate-wrapper {
+            position: relative;
+            width: 100vw;
+            min-height: 100vh;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #ffffff;
+          }
+          .ambient-grid {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0.03) 1px,
+                transparent 1px
+              ),
+              linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.03) 1px,
+                transparent 1px
+              );
+            background-size: 40px 40px;
+            pointer-events: none;
+          }
+          .ambient-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(
+              circle,
+              rgba(255, 51, 75, 0.12) 0%,
+              transparent 70%
+            );
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+          }
+          .web-gate-card {
+            position: relative;
+            z-index: 10;
+            max-width: 580px;
+            width: 100%;
+            background: rgba(14, 14, 14, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 44px 36px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
+          }
+          .gate-kicker {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            color: #ff334b;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+          }
+          .gate-title {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            color: #ffffff;
+          }
+          .gate-desc {
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 32px;
+          }
+          .gate-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+          }
+          .gate-download-btn {
+            display: inline-block;
+            background: #ffffff;
+            color: #000000;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 14px 32px;
+            border-radius: 2px;
+            text-decoration: none;
+            letter-spacing: 0.02em;
+            transition: transform 0.15s ease, background 0.15s ease;
+            width: 100%;
+            max-width: 360px;
+          }
+          .gate-download-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-1px);
+          }
+          .gate-back-link {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.45);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            padding: 6px 12px;
+            transition: color 0.15s ease;
+          }
+          .gate-back-link:hover {
+            color: #ffffff;
+          }
+          .gate-specs {
+            margin-top: 36px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            color: rgba(255, 255, 255, 0.35);
+            flex-wrap: wrap;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  return <LiveDashboard />;
 }

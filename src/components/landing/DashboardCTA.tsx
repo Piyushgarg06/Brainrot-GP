@@ -1,8 +1,16 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { isDesktopApp } from '@/lib/isDesktop';
 
 export function DashboardCTA() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    setIsDesktop(isDesktopApp());
+  }, []);
+
   return (
     <section className="dashboard-cta-section">
       <div className="cta-ambient-glow" />
@@ -10,12 +18,16 @@ export function DashboardCTA() {
         <span className="cta-kicker">// 03 PIT WALL ACCESS · 2026 LIVE TELEMETRY</span>
         <h2 className="cta-title">READY FOR LIGHTS OUT?</h2>
         <p className="cta-sub">
-          Launch the unnecessary second-screen companion for live lap times, unfiltered team radio, and pure paddock chaos.
+          {isDesktop
+            ? 'Launch the unnecessary second-screen companion for live lap times, unfiltered team radio, and pure paddock chaos.'
+            : 'Download the standalone Windows application for direct OpenF1 live telemetry, uninterrupted background audio, and zero server limits.'}
         </p>
 
         <div className="cta-btn-wrapper">
           <Link
-            href="/dashboard"
+            href={isDesktop ? "/dashboard" : "https://github.com/Piyushgarg06/Brainrot-GP/releases/latest"}
+            target={isDesktop ? undefined : "_blank"}
+            rel={isDesktop ? undefined : "noopener noreferrer"}
             className="cta-dashboard-btn"
             style={{
               fontFamily: 'var(--font-body)',
@@ -41,7 +53,7 @@ export function DashboardCTA() {
               (e.currentTarget as HTMLAnchorElement).style.color = '#ffffff';
             }}
           >
-            Open Dashboard →
+            {isDesktop ? 'Open Dashboard →' : 'Download Brainrot-GP ↓'}
           </Link>
         </div>
 

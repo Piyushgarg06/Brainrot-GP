@@ -87,6 +87,10 @@ function createMainWindow() {
     },
   });
 
+  // Explicitly identify BrainrotGP desktop app in userAgent
+  const currentUA = mainWindow.webContents.getUserAgent();
+  mainWindow.webContents.setUserAgent(`${currentUA} BrainrotGP-Desktop/${app.getVersion()}`);
+
   Menu.setApplicationMenu(buildMenu());
 
   mainWindow.loadURL(`http://127.0.0.1:${appPort}/`);
@@ -194,6 +198,9 @@ function buildMenu() {
     {
       label: 'BrainrotGP',
       submenu: [
+        { label: 'Open Dashboard', accelerator: 'CmdOrCtrl+D', click: () => mainWindow?.loadURL(`http://127.0.0.1:${appPort}/dashboard`) },
+        { label: 'Paddock Home / Lineup', accelerator: 'CmdOrCtrl+H', click: () => mainWindow?.loadURL(`http://127.0.0.1:${appPort}/`) },
+        { type: 'separator' },
         { label: 'Reload', accelerator: 'CmdOrCtrl+R', click: () => mainWindow?.webContents.reload() },
         { label: 'Force Reload', accelerator: 'CmdOrCtrl+Shift+R', click: () => mainWindow?.webContents.reloadIgnoringCache() },
         { type: 'separator' },

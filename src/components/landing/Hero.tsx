@@ -5,11 +5,17 @@ import { useRef, useState, useEffect } from 'react';
 import { CarOrbit } from './CarOrbit';
 import { useLenis } from '@/hooks/useLenis';
 import { getGlobalSound, setGlobalSound, SOUND_CHANGE_EVENT } from '@/lib/soundState';
+import { isDesktopApp } from '@/lib/isDesktop';
 
 export function Hero() {
   const heroRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const [isSoundOn, setIsSoundOn] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    setIsDesktop(isDesktopApp());
+  }, []);
 
   // Lenis smooth scroll — active on landing, destroyed before dashboard
   useLenis(true);
@@ -66,10 +72,12 @@ export function Hero() {
             The unnecessary second-screen companion for Formula 1.
           </p>
 
-          {/* Original Open Dashboard CTA (square corners, clean border) */}
+          {/* CTA Button: Download Brainrot-GP on website, Open Dashboard in desktop app */}
           <div className="hero-cta-wrapper">
             <Link
-              href="/dashboard"
+              href={isDesktop ? "/dashboard" : "https://github.com/Piyushgarg06/Brainrot-GP/releases/latest"}
+              target={isDesktop ? undefined : "_blank"}
+              rel={isDesktop ? undefined : "noopener noreferrer"}
               className="original-dashboard-btn"
               style={{
                 fontFamily: 'var(--font-body)',
@@ -93,7 +101,7 @@ export function Hero() {
                 (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--border, rgba(255, 255, 255, 0.2))';
               }}
             >
-              Open Dashboard →
+              {isDesktop ? 'Open Dashboard →' : 'Download Brainrot-GP ↓'}
             </Link>
           </div>
 

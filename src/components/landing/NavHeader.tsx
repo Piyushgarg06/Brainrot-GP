@@ -2,10 +2,16 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { isDesktopApp } from '@/lib/isDesktop';
 
 export function NavHeader() {
   const [currentSection, setCurrentSection] = useState(1);
+  const [isDesktop, setIsDesktop] = useState(false);
   const sections = ['01', '02', '03', '04', '05', '06', '07', '08'];
+
+  useEffect(() => {
+    setIsDesktop(isDesktopApp());
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,18 +72,39 @@ export function NavHeader() {
             <button className="nav-item" onClick={() => scrollTo('memes')}>
               memes
             </button>
-            <Link href="/dashboard" className="nav-item">
-              telemetry
-            </Link>
+            {isDesktop ? (
+              <Link href="/dashboard" className="nav-item">
+                telemetry
+              </Link>
+            ) : (
+              <a
+                href="https://github.com/Piyushgarg06/Brainrot-GP/releases/latest"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-item"
+              >
+                releases
+              </a>
+            )}
           </nav>
 
           {/* Right Actions */}
           <div className="header-actions">
-            <Link href="/dashboard" className="client-login">
-              live stream
-            </Link>
-            <Link href="/dashboard" className="btn-accent">
-              open dashboard
+            <a
+              href="https://github.com/Piyushgarg06/Brainrot-GP"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="client-login"
+            >
+              github
+            </a>
+            <Link
+              href={isDesktop ? "/dashboard" : "https://github.com/Piyushgarg06/Brainrot-GP/releases/latest"}
+              target={isDesktop ? undefined : "_blank"}
+              rel={isDesktop ? undefined : "noopener noreferrer"}
+              className="btn-accent"
+            >
+              {isDesktop ? 'open dashboard' : 'download brainrot-gp'}
             </Link>
           </div>
         </div>
