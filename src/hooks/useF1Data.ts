@@ -227,9 +227,14 @@ export function useF1Data() {
     }
   }, [scheduleNext]);
 
-  // Tab visibility — pause on hidden, resume + immediate fetch on visible
+  // Tab visibility — pause on hidden, resume + immediate fetch on visible (desktop app keeps live polling)
   useEffect(() => {
+    const isDesktopApp = typeof navigator !== 'undefined' && navigator.userAgent.includes('Electron');
     const onVisibilityChange = () => {
+      if (isDesktopApp) {
+        tabVisibleRef.current = true;
+        return;
+      }
       tabVisibleRef.current = document.visibilityState === 'visible';
       if (tabVisibleRef.current) {
         clearTimer();

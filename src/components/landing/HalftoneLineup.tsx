@@ -559,8 +559,11 @@ export function HalftoneLineup() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
-    // Stop all audio immediately when tab changes or window loses focus
+    // Stop all audio immediately when tab changes or window loses focus (browser only; desktop app allows background audio)
+    const isDesktopApp = typeof navigator !== 'undefined' && navigator.userAgent.includes('Electron');
+
     const handleVisibility = () => {
+      if (isDesktopApp) return;
       if (document.hidden) {
         pauseAllAudio();
       } else if (wasInSection.current && getGlobalSound() && !activeSnippetDriverRef.current) {
@@ -569,10 +572,12 @@ export function HalftoneLineup() {
     };
 
     const handleWindowBlur = () => {
+      if (isDesktopApp) return;
       pauseAllAudio();
     };
 
     const handleWindowFocus = () => {
+      if (isDesktopApp) return;
       if (wasInSection.current && getGlobalSound() && !document.hidden && !activeSnippetDriverRef.current) {
         playTheme();
       }

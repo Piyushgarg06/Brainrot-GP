@@ -7,20 +7,15 @@
 
 > *"Bro just held the outside line through Eau Rouge and gained 3 positions while crying to his driver's audio clip."*
 
-> ## ⚠️ Service Status — Free Server Allocation Exhausted
+> ## 🪟 Windows Desktop App (Recommended)
 >
-> The hosted live-timing service is currently **unavailable because the free server allocation has been exhausted**.
+> **Download BrainrotGP for Windows from [GitHub Releases](https://github.com/Piyushgarg06/Brainrot-GP/releases)**
 >
-> **The best way to experience BrainrotGP right now is to clone the repository and run the Python live-timing proxy locally.** This gives you the full experience without relying on the hosted server.
+> Running BrainrotGP natively on Windows solves two key limitations:
+> 1. **No Cloud Server Limits:** The desktop app runs locally on your machine and communicates directly with the OpenF1 API, bypassing cloud backend rate limits and hosting exhaustion completely.
+> 2. **Uninterrupted Background Audio:** Windows allows the desktop app to stream audio, live telemetry, and driver radio clips continuously even when minimized or when you switch windows/monitors.
 >
-> ```bash
-> git clone https://github.com/Piyushgarg06/Brainrot-GP-The-unnecessary-second-screen-companion-for-Formula-1.git
-> cd brainrot-gp
-> ```
->
-> Follow the **Python Proxy Setup** section below to get the live F1 telemetry service running locally.
->
-> The frontend can still fall back to the public OpenF1 API, but the local FastF1 proxy provides the intended low-latency experience.
+> Simply download the latest `BrainrotGP-Setup-*.exe` from the Releases page, install, and launch!
 
 **BrainrotGP** is a professional-grade, highly unnecessary, and dangerously copium-fueled second-screen companion for Formula 1 races. Built specifically for fans who watch Grand Prix at 3:00 AM, desperately refreshing timing screens like it will somehow help their favorite driver catch Max Verstappen.
 

@@ -209,8 +209,11 @@ export function StarfieldVideoReveal({
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
-    // Stop video and audio immediately when tab changes or window loses focus
+    // Stop video and audio immediately when tab changes or window loses focus (browser only; desktop app allows background audio)
+    const isDesktopApp = typeof navigator !== 'undefined' && navigator.userAgent.includes('Electron');
+
     const handleVisibility = () => {
+      if (isDesktopApp) return;
       const video = videoRef.current;
       if (!video) return;
       if (document.hidden) {
@@ -222,6 +225,7 @@ export function StarfieldVideoReveal({
     };
 
     const handleWindowBlur = () => {
+      if (isDesktopApp) return;
       const video = videoRef.current;
       if (video && !video.paused) {
         video.pause();
@@ -230,6 +234,7 @@ export function StarfieldVideoReveal({
     };
 
     const handleWindowFocus = () => {
+      if (isDesktopApp) return;
       const video = videoRef.current;
       if (video && wasInSection.current && hasStartedPlayback.current && !hasFinishedPlayback.current && !document.hidden) {
         video.play().then(() => setIsPlaying(true)).catch(() => {});

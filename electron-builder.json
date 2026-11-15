@@ -1,0 +1,65 @@
+{
+  "appId": "com.brainrotgp.app",
+  "productName": "BrainrotGP",
+  "copyright": "Copyright © 2026 BrainrotGP",
+
+  "directories": {
+    "output": "dist"
+  },
+
+  "files": [
+    "electron/**/*",
+    "!electron/README.md",
+    ".next/**/*",
+    "public/**/*",
+    "node_modules/**/*",
+    "package.json",
+    "next.config.ts",
+    "tsconfig.json",
+    "src/**/*",
+    "postcss.config.mjs"
+  ],
+
+  "extraResources": [
+    {
+      "from": "public",
+      "to": "public",
+      "filter": ["**/*"]
+    }
+  ],
+
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "electron/icons/icon.ico",
+    "artifactName": "BrainrotGP-Setup-${version}.exe"
+  },
+
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "allowElevation": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "BrainrotGP",
+    "installerIcon": "electron/icons/icon.ico",
+    "uninstallerIcon": "electron/icons/icon.ico",
+    "installerHeaderIcon": "electron/icons/icon.ico",
+    "deleteAppDataOnUninstall": false
+  },
+
+  "electronVersion": "45.3.2",
+
+  "nodeGypRebuild": false,
+  "npmRebuild": false,
+  "asar": true,
+  "asarUnpack": [
+    "node_modules/next/**/*",
+    ".next/**/*"
+  ]
+}
+

@@ -1,0 +1,48 @@
+name: Build & Release Windows App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: brainrot-gp/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./brainrot-gp
+        run: npm ci
+
+      - name: Build Next.js
+        working-directory: ./brainrot-gp
+        run: npm run build
+
+      - name: Build Windows Installer with electron-builder
+        working-directory: ./brainrot-gp
+        run: npx electron-builder --win --config electron-builder.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: brainrot-gp/dist/*.exe
+          draft: false
+          prerelease: false
+          generate_release_notes: true
