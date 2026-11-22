@@ -35,26 +35,50 @@ export function LiveDashboard() {
     : f1State.lastUpdated   ? 'reconnecting'
     : 'reconnecting';
 
+  // Broadcast delay (seconds) — defaults to 20s as requested to sync with TV streams
+  const [broadcastDelay, setBroadcastDelay] = useState<number>(20);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('brainrotgp-audio-delay');
+      if (saved !== null) {
+        setBroadcastDelay(Number(saved));
+      } else {
+        localStorage.setItem('brainrotgp-audio-delay', '20');
+      }
+      const onDelayChange = () => {
+        const val = localStorage.getItem('brainrotgp-audio-delay');
+        if (val !== null) setBroadcastDelay(Number(val));
+      };
+      window.addEventListener('brainrotgp-delay-updated', onDelayChange);
+      return () => window.removeEventListener('brainrotgp-delay-updated', onDelayChange);
+    }
+  }, []);
+
   // Refs to break circular dependency: useEventQueue <-> useBroadcastChannel
   const injectToastRef = useRef<(event: F1Event) => void>(() => {});
   const playAudioRef   = useRef<(event: F1Event) => void>(() => {});
 
-  // ── Audio playback helper ─────────────────────────────────────
+  // ── Audio playback helper (with 20s broadcast delay compensation) ──
   const playAudio = useCallback((event: F1Event) => {
     const driver = DRIVERS[event.driverCode];
     if (!driver || !audioReady) return;
     const isWin = event.type === 'WINNER';
-    audio.play(
-      driver.audioFile,
-      event.priority,
-      isWin,
-      isWin ? driver.audioOffsetWin   : driver.audioOffset,
-      isWin ? driver.audioDurationWin : driver.audioDuration,
-      driver.hasWinTheme
-    );
-    setActiveCode(event.driverCode);
-    setTimeout(() => setActiveCode(null), 400);
-  }, [audio, audioReady]);
+    const delayMs = Math.max(0, broadcastDelay) * 1000;
+
+    setTimeout(() => {
+      audio.play(
+        driver.audioFile,
+        event.priority,
+        isWin,
+        isWin ? driver.audioOffsetWin   : driver.audioOffset,
+        isWin ? driver.audioDurationWin : driver.audioDuration,
+        driver.hasWinTheme
+      );
+      setActiveCode(event.driverCode);
+      setTimeout(() => setActiveCode(null), 400);
+    }, delayMs);
+  }, [audio, audioReady, broadcastDelay]);
 
   // Keep playAudioRef updated with the fresh callback
   useEffect(() => {
@@ -226,3 +250,4 @@ export function LiveDashboard() {
     </div>
   );
 }
+

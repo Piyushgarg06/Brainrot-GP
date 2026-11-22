@@ -35,3 +35,4 @@ export function isDesktopApp(): boolean {
 
   return false;
 }
+

@@ -23,6 +23,7 @@ live_state = {
     "driverNumberMap": {},
     "fastestLap": None,
     "isLive": False,
+    "raceFinished": False,
     "lastUpdated": 0,
     "error": None
 }
@@ -83,13 +84,19 @@ def process_signalr_message(msg):
             return
 
     with state_lock:
-        if topic == "SessionInfo":
+        if topic == "SessionStatus":
+            status_val = payload.get("Status", "") if isinstance(payload, dict) else str(payload)
+            if status_val in ["Finished", "Finalised", "Ends"]:
+                live_state["raceFinished"] = True
+                live_state["isLive"] = False
+
+        elif topic == "SessionInfo":
             meeting = payload.get("Meeting", {})
             session_info["sessionKey"] = payload.get("Key", 9999)
             session_info["sessionName"] = payload.get("Name", "Live Session")
             session_info["sessionType"] = payload.get("Type", "Race")
             session_info["dateStart"] = payload.get("StartDate", datetime.now(timezone.utc).isoformat() + "Z")
-            session_info["dateEnd"] = payload.get("EndDate", None)
+            session_info["dateEnd"] = None  # Don't send local dateEnd without timezone to avoid client-side premature expiration
             session_info["circuitName"] = meeting.get("Circuit", {}).get("ShortName", "Unknown Circuit")
             
         elif topic == "DriverList":
@@ -169,7 +176,7 @@ def process_signalr_message(msg):
             "sessionName": session_info.get("sessionName", "Live Race"),
             "sessionType": session_info.get("sessionType", "Race"),
             "dateStart": session_info.get("dateStart", datetime.now(timezone.utc).isoformat() + "Z"),
-            "dateEnd": session_info.get("dateEnd", None),
+            "dateEnd": None,
             "circuitName": session_info.get("circuitName", "Unknown Circuit")
         } if session_info else None
 

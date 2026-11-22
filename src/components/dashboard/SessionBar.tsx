@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { F1DataState } from '@/types/f1';
 
 interface SessionBarProps {
@@ -19,6 +19,25 @@ function formatSessionLabel(sessionType: string): string {
 export function SessionBar({ f1State }: SessionBarProps) {
   const { session, positions, drivers, driverNumberMap, fastestLap, isLive, raceFinished } = f1State;
   const [showInstructions, setShowInstructions] = useState(false);
+  const [audioDelay, setAudioDelay] = useState(20);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('brainrotgp-audio-delay');
+      if (saved !== null) {
+        setAudioDelay(Number(saved));
+      }
+    }
+  }, []);
+
+  const updateDelay = (val: number) => {
+    const clamped = Math.max(0, Math.min(60, val));
+    setAudioDelay(clamped);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('brainrotgp-audio-delay', String(clamped));
+      window.dispatchEvent(new Event('brainrotgp-delay-updated'));
+    }
+  };
 
   const leader = positions[0];
   const leaderCode = leader
@@ -103,6 +122,60 @@ export function SessionBar({ f1State }: SessionBarProps) {
             <span style={{ fontSize: '13px', lineHeight: 1 }}>ℹ</span>
             <span>How to use</span>
           </button>
+
+          {/* Broadcast Audio Delay Stepper */}
+          <div
+            style={{
+              display:         'flex',
+              alignItems:      'center',
+              gap:             '5px',
+              background:      'var(--surface-2)',
+              border:          '1px solid var(--border)',
+              borderRadius:    '4px',
+              padding:         '2px 8px',
+              fontFamily:      'var(--font-mono)',
+              fontSize:        '11px',
+              color:           'var(--muted)',
+            }}
+            title="Broadcast delay compensation: delays audio playback to match your TV stream"
+          >
+            <span>⏱️ Delay:</span>
+            <button
+              onClick={() => updateDelay(audioDelay - 5)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text)',
+                cursor: 'pointer',
+                padding: '0 3px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                lineHeight: 1,
+              }}
+              title="Decrease audio delay by 5s"
+            >
+              −
+            </button>
+            <span style={{ color: 'var(--text)', fontWeight: 700, minWidth: '24px', textAlign: 'center' }}>
+              {audioDelay}s
+            </span>
+            <button
+              onClick={() => updateDelay(audioDelay + 5)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text)',
+                cursor: 'pointer',
+                padding: '0 3px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                lineHeight: 1,
+              }}
+              title="Increase audio delay by 5s"
+            >
+              +
+            </button>
+          </div>
 
           <span
             style={{
